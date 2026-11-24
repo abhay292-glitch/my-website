@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StaySetu — Smart Relocation, Billing &amp; Property-Scoped Safety OS</title>
+  <title>StaySetu — Live Owner &amp; Customer Sync OS</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -17,12 +17,24 @@
 </head>
 <body class="text-slate-800 antialiased">
 
+  <!-- LIVE TOAST ALERT BANNER (INSTANT COMPLAINT / ENROLL / SOS NOTIFICATION) -->
+  <div id="liveToastBanner" class="hidden fixed bottom-5 right-5 z-[60] max-w-sm w-full bg-indigo-950 text-white border-2 border-amber-400 rounded-2xl p-4 shadow-2xl">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <div id="liveToastTitle" class="text-xs font-extrabold uppercase tracking-wider text-amber-400">Live Alert</div>
+        <div id="liveToastMessage" class="text-xs sm:text-sm font-semibold mt-1 text-white"></div>
+      </div>
+      <button onclick="hideLiveToast()" class="text-slate-300 hover:text-white font-bold text-xs">✕</button>
+    </div>
+  </div>
+
   <!-- TOP NAVBAR WITH ROLE BADGE & LOGOUT -->
   <nav class="bg-indigo-950 text-white sticky top-0 z-50 shadow-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
       <div class="flex items-center gap-2 cursor-pointer" onclick="handleBrandClick()">
         <div class="w-9 h-9 rounded-lg bg-amber-400 text-indigo-950 font-extrabold flex items-center justify-center text-lg">S</div>
         <span class="text-xl font-bold tracking-tight">Stay<span class="text-amber-400">Setu</span></span>
+        <span class="hidden md:inline-block text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full">LIVE SYNC</span>
       </div>
 
       <div id="navUserArea" class="hidden flex items-center gap-2 sm:gap-3">
@@ -37,7 +49,7 @@
         <!-- Owner-Only Nav Indicator -->
         <div id="ownerNavGroup" class="hidden items-center gap-2 relative">
           <span class="text-xs font-bold bg-amber-400 text-indigo-950 px-3 py-1.5 rounded-lg">Owner Portal</span>
-          <span id="ownerSosDot" class="hidden absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 animate-ping"></span>
+          <span id="ownerAlertDot" class="hidden absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 animate-ping"></span>
         </div>
 
         <button onclick="logoutSession()" class="text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg transition">
@@ -58,7 +70,7 @@
           </div>
           <div id="sirenAlertMessage" class="text-sm sm:text-base font-extrabold"></div>
           <div class="text-[11px] text-red-100 mt-0.5">
-            Scope: Sent strictly to registered residents of this property (other properties are not alerted).
+            Scope: Sent strictly to registered residents of this property.
           </div>
         </div>
       </div>
@@ -76,15 +88,15 @@
       <div class="bg-indigo-900 text-white p-8 flex flex-col justify-between">
         <div>
           <span class="inline-block bg-amber-400/20 text-amber-300 text-xs font-semibold px-3 py-1 rounded-full mb-4">Smart Relocation &amp; Property Safety OS</span>
-          <h1 class="text-3xl font-extrabold leading-tight">Find Your Next Stay With Safety, Clarity &amp; Control.</h1>
+          <h1 class="text-3xl font-extrabold leading-tight">Live Owner Registration, Student Enrollment &amp; Instant Alerts.</h1>
           <p class="text-indigo-200 text-sm mt-3 leading-relaxed">
-            Separate login flags for Customers and Property Owners: Customers manage bookings, sub-meter electricity bills with meter photos, 5-day grace periods, and 50% deposit checkout alerts; Owners upload sub-meter photos, track website-booked beds (₹100/bed/month) with monthly due dates &amp; rent status, and control property-scoped sirens.
+            Open two tabs/windows side-by-side: log in as <strong>OWNER</strong> in one and <strong>CUSTOMER</strong> in another. Register a PG/Room as Owner, enroll as Customer, and send instant complaints directly to the Owner Portal.
           </p>
         </div>
         <div class="space-y-2.5 mt-8 text-xs sm:text-sm text-indigo-100">
-          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Role Flag: <code class="text-amber-300">CUSTOMER</code> (Student / Tenant Portal)</div>
-          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Role Flag: <code class="text-amber-300">OWNER</code> (Property Owner Portal)</div>
-          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Owner Meter Photo Upload • ₹100/Website-Booked Bed + Rent Date</div>
+          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Owner registers PG/Room → Appears live in Customer Explore</div>
+          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Customer enrolls → Appears live in Owner Enrolled Beds (₹100/bed)</div>
+          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Customer sends complaint → Instant message in Owner Portal</div>
         </div>
       </div>
 
@@ -138,12 +150,12 @@
           <!-- Owner Fields -->
           <div id="ownerLoginFields" class="hidden space-y-3.5">
             <div>
-              <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Property / PG Name</label>
-              <input type="text" id="ownerPropertyName" placeholder="Enter your PG or property name" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
+              <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Owner / Property Brand Name</label>
+              <input type="text" id="ownerPropertyName" placeholder="e.g., Tiwari Residency PG" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
             </div>
             <div>
               <label class="block text-xs font-semibold uppercase text-slate-600 mb-1">Owner Security PIN</label>
-              <input type="password" id="ownerPinInput" placeholder="Enter your security PIN" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
+              <input type="password" id="ownerPinInput" placeholder="Enter your security PIN (e.g. 1234)" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm" />
             </div>
           </div>
 
@@ -161,20 +173,20 @@
       <button onclick="logoutSession()" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-indigo-700 bg-white border border-slate-200 px-3.5 py-2 rounded-lg shadow-sm transition">
         ← Switch Role / Edit Profile
       </button>
-      <span class="text-xs text-slate-500">Showing <strong id="listingCountText" class="text-slate-800">9</strong> verified stays across all budgets</span>
+      <span class="text-xs text-slate-500">Showing <strong id="listingCountText" class="text-slate-800">0</strong> verified stays (Owner-registered stays appear live!)</span>
     </div>
 
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5">
       <div>
         <h2 class="text-2xl font-bold text-slate-900">Verified Stays in <span id="displayTargetCity" class="text-indigo-600"></span></h2>
-        <p class="text-sm text-slate-500">Choose a PG, Personal Room, or Sharing Room and customize monthly facilities.</p>
+        <p class="text-sm text-slate-500">Choose a PG, Personal Room, or Sharing Room registered by owners and enroll directly.</p>
       </div>
 
       <div class="flex flex-wrap gap-1.5 bg-slate-200/70 p-1.5 rounded-xl">
-        <button onclick="filterCategory('ALL')" id="tab-ALL" class="cat-tab px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-white text-indigo-900 shadow-sm">All (9)</button>
-        <button onclick="filterCategory('PG_HOSTEL')" id="tab-PG_HOSTEL" class="cat-tab px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900">1. PG / Hostel (3)</button>
-        <button onclick="filterCategory('PERSONAL_ROOM')" id="tab-PERSONAL_ROOM" class="cat-tab px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900">2. Personal Room (3)</button>
-        <button onclick="filterCategory('SHARING_ROOM')" id="tab-SHARING_ROOM" class="cat-tab px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900">3. Sharing Room (3)</button>
+        <button onclick="filterCategory('ALL')" id="tab-ALL" class="cat-tab px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-white text-indigo-900 shadow-sm">All</button>
+        <button onclick="filterCategory('PG_HOSTEL')" id="tab-PG_HOSTEL" class="cat-tab px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900">PG / Hostel</button>
+        <button onclick="filterCategory('PERSONAL_ROOM')" id="tab-PERSONAL_ROOM" class="cat-tab px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900">Personal Room</button>
+        <button onclick="filterCategory('SHARING_ROOM')" id="tab-SHARING_ROOM" class="cat-tab px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900">Sharing Room</button>
       </div>
     </div>
 
@@ -205,19 +217,11 @@
       <button onclick="switchCustomerView('explore')" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-indigo-700 bg-white border border-slate-200 px-3.5 py-2 rounded-lg shadow-sm transition">
         ← Back to Explore Stays
       </button>
-
-      <div id="scopeSimulatorBar" class="hidden flex items-center gap-2 bg-slate-800 text-white px-3 py-1.5 rounded-xl text-xs">
-        <span class="text-slate-300">Siren Scope Test:</span>
-        <select id="simulatedViewerSelect" onchange="evaluateSirenVisibility()" class="bg-slate-700 text-amber-300 font-bold px-2 py-1 rounded border border-slate-600">
-          <option value="SAME_PG">Resident of THIS PG (Registered)</option>
-          <option value="OTHER_PG">Resident of ANOTHER PG (Outside)</option>
-        </select>
-      </div>
     </div>
 
     <div id="noBookingBanner" class="bg-white border border-slate-200 rounded-2xl p-10 text-center">
-      <h3 class="text-xl font-bold text-slate-800">No Active Booking Yet</h3>
-      <p class="text-slate-500 text-sm mt-1">Select a PG, Personal Room, or Sharing Room in Explore to lock it with a token.</p>
+      <h3 class="text-xl font-bold text-slate-800">No Active Enrollment Yet</h3>
+      <p class="text-slate-500 text-sm mt-1">Select a PG, Personal Room, or Sharing Room in Explore to enroll.</p>
       <button onclick="switchCustomerView('explore')" class="mt-4 bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-indigo-700">Browse Rooms</button>
     </div>
 
@@ -239,7 +243,7 @@
       <div id="finalCheckoutCard" class="hidden bg-rose-50 border-2 border-rose-400 rounded-2xl p-6 shadow-md">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <span class="bg-rose-600 text-white text-xs font-extrabold px-3 py-1 rounded-full uppercase">Final Checkout Processed</span>
-          <button onclick="discardBooking(true)" class="text-xs font-bold bg-slate-900 text-white px-3.5 py-1.5 rounded-lg">Book New Room</button>
+          <button onclick="discardBooking(true)" class="text-xs font-bold bg-slate-900 text-white px-3.5 py-1.5 rounded-lg">Enroll New Room</button>
         </div>
         <h3 id="finalCheckoutHeading" class="text-xl font-extrabold text-rose-950 mt-3"></h3>
         <p id="finalCheckoutSummaryText" class="text-sm text-rose-900 mt-1.5"></p>
@@ -252,13 +256,13 @@
             <div class="flex flex-wrap items-center justify-between gap-2">
               <span class="bg-amber-200 text-amber-900 text-xs font-bold px-3 py-1 rounded-full">5-DAY TOKEN HOLD ACTIVE</span>
               <button onclick="discardBooking()" class="text-xs font-bold text-red-700 bg-red-100 hover:bg-red-200 px-3 py-1.5 rounded-lg transition">
-                ✕ Discard Booking
+                ✕ Cancel Enrollment
               </button>
             </div>
             <h3 id="lockedRoomTitle" class="text-xl font-bold text-slate-900 mt-3"></h3>
             <p id="lockedSelectedFacilities" class="text-xs font-medium text-indigo-800 bg-indigo-100/70 inline-block px-2.5 py-1 rounded mt-1.5"></p>
             <p class="text-sm text-slate-600 mt-2">
-              Token Paid: <strong id="lockedTokenAmt"></strong> | Locked For: <strong>5 Days (120 Hours)</strong>
+              Token Paid: <strong id="lockedTokenAmt"></strong> | Owner: <strong id="lockedOwnerName"></strong> | Locked For: <strong>5 Days</strong>
             </p>
           </div>
 
@@ -276,7 +280,7 @@
             <div class="space-y-2.5">
               <input type="text" id="kycLast4Input" maxlength="4" placeholder="ID Last 4 Digits (e.g. 4829)" class="w-full px-3 py-2 border rounded-lg text-xs" />
               <button onclick="confirmFinalMoveIn()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg text-xs shadow">
-                Pay &amp; Confirm Final Booking ✓
+                Confirm Enrollment &amp; Move-In ✓
               </button>
             </div>
           </div>
@@ -291,7 +295,7 @@
             <div class="flex flex-wrap justify-between items-start gap-4">
               <div>
                 <div class="flex flex-wrap items-center gap-2">
-                  <span id="dashStatusBadge" class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-0.5 rounded-full">ACTIVE TENANT</span>
+                  <span id="dashStatusBadge" class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-0.5 rounded-full">ENROLLED RESIDENT</span>
                   <span id="dashKycBadge" class="bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-0.5 rounded-full"></span>
                   <span id="dashDueDateBadge" class="bg-slate-100 text-slate-700 text-xs font-semibold px-2.5 py-0.5 rounded-full"></span>
                   <button onclick="discardBooking()" class="text-xs font-semibold text-red-600 hover:underline ml-1">Vacate Room</button>
@@ -316,7 +320,7 @@
             </div>
           </div>
 
-          <!-- Monthly Rent + Sub-Meter Electricity Bill + Meter Photo Calculation -->
+          <!-- Monthly Rent + Sub-Meter Electricity Bill -->
           <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
               <div>
@@ -329,7 +333,7 @@
             <div class="grid sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200/80 mb-4">
               <div>
                 <label class="block text-[11px] font-semibold text-slate-500 uppercase">Prev Reading</label>
-                <input type="number" id="prevMeterInput" readonly oninput="updateLiveMeterPreview()" class="w-full mt-1 px-3 py-2 bg-slate-200/70 rounded-lg text-xs font-bold text-slate-700" />
+                <input type="number" id="prevMeterInput" readonly class="w-full mt-1 px-3 py-2 bg-slate-200/70 rounded-lg text-xs font-bold text-slate-700" />
               </div>
               <div>
                 <label class="block text-[11px] font-semibold text-slate-500 uppercase">Current Unit</label>
@@ -346,7 +350,6 @@
               </div>
             </div>
 
-            <!-- Live Unit & Bill Preview Strip -->
             <div class="grid sm:grid-cols-3 gap-3 bg-indigo-950 text-white p-3.5 rounded-xl text-xs mb-4">
               <div>
                 <span class="text-indigo-300 block text-[11px]">Units Consumed</span>
@@ -401,40 +404,44 @@
             </div>
           </div>
 
-          <!-- Complaints + Support -->
+          <!-- INSTANT COMPLAINT TO OWNER + 24x7 SUPPORT -->
           <div class="grid md:grid-cols-2 gap-6">
-            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-              <h4 class="text-base font-bold text-slate-900">Room Maintenance Complaint</h4>
-              <p class="text-xs text-slate-500 mt-0.5">Direct ticket to property owner (24-Hr SLA).</p>
+            <div class="bg-white rounded-2xl p-6 border-2 border-indigo-200 shadow-sm">
+              <div class="flex items-center justify-between">
+                <h4 class="text-base font-bold text-slate-900">Instant Complaint to Owner</h4>
+                <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Live to Owner</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">Send a complaint — it appears immediately in the Owner Portal.</p>
               <div class="mt-3 space-y-2.5">
                 <select id="complaintCat" class="w-full px-3 py-2 border rounded-lg text-xs bg-white">
                   <option value="Wi-Fi / Internet">Wi-Fi / Internet Issue</option>
                   <option value="Plumbing / Water">Plumbing / Water Issue</option>
                   <option value="Electricity / Fan">Electricity / Geyser / Fan</option>
                   <option value="Food / Hygiene">Food / Hygiene Issue</option>
+                  <option value="Room / AC / Lock">Room / AC / Lock Issue</option>
                 </select>
-                <textarea id="complaintDesc" rows="2" placeholder="Describe your issue..." class="w-full px-3 py-2 border rounded-lg text-xs"></textarea>
-                <button onclick="raiseComplaint()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2 rounded-lg text-xs">
-                  Submit Complaint to Owner
+                <textarea id="complaintDesc" rows="2" placeholder="Describe your issue (e.g., Room 204 AC not cooling)..." class="w-full px-3 py-2 border rounded-lg text-xs"></textarea>
+                <button onclick="raiseComplaint()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-xs shadow">
+                  Send Complaint Now →
                 </button>
               </div>
               <div id="complaintsList" class="mt-3 space-y-2"></div>
             </div>
 
-            <div class="bg-white rounded-2xl p-6 border border-indigo-200 shadow-sm">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
               <div class="flex items-center justify-between">
                 <h4 class="text-base font-bold text-indigo-950">24x7 Customer Support</h4>
-                <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Live Desk</span>
+                <span class="text-[10px] font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full">Live Desk</span>
               </div>
-              <p class="text-xs text-slate-500 mt-0.5">Get help with billing, 5-day grace warnings, or checkout settlement.</p>
+              <p class="text-xs text-slate-500 mt-0.5">Get help with enrollment, billing, or deposit settlement.</p>
               <div id="supportChatBox" class="mt-3 h-28 overflow-y-auto bg-slate-50 border border-slate-200 rounded-xl p-2.5 space-y-2 text-xs">
                 <div class="bg-indigo-100 text-indigo-950 p-2 rounded-lg">
-                  <strong>StaySetu Support:</strong> Hello! How can we help you with your stay, billing, or deposit today?
+                  <strong>StaySetu Support:</strong> Hello! How can we help you with your stay today?
                 </div>
               </div>
               <div class="mt-2.5 flex gap-2">
                 <input type="text" id="supportMsgInput" placeholder="Type a message for support..." class="flex-1 px-3 py-2 border rounded-lg text-xs" />
-                <button onclick="sendSupportMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3.5 py-2 rounded-lg text-xs">
+                <button onclick="sendSupportMessage()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-3.5 py-2 rounded-lg text-xs">
                   Send
                 </button>
               </div>
@@ -450,7 +457,7 @@
               <span class="text-[10px] font-bold bg-red-200 text-red-900 px-2 py-0.5 rounded-full">Direct to Owner</span>
             </div>
             <p class="text-xs text-red-700 mt-1">
-              Report an urgent room issue directly to the property owner so they can dispatch a warden/guard or trigger a property siren.
+              Report an urgent room issue directly to the property owner.
             </p>
             <button onclick="openCustomerSosModal()" class="mt-3 w-full bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 rounded-xl text-xs shadow">
               Send Emergency SOS to Owner
@@ -503,67 +510,140 @@
     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
       <div>
         <span class="bg-amber-100 text-amber-900 text-xs font-bold px-3 py-1 rounded-full">Property Owner Control Center</span>
-        <h2 class="text-2xl font-bold text-slate-900 mt-2">Website-Booked Beds (₹100/Bed), Light Bill Photo &amp; Scoped Siren</h2>
-        <p class="text-sm text-slate-500">Track beds booked through StaySetu with monthly rent dates &amp; payment status, upload sub-meter photos for electricity billing, and trigger property sirens.</p>
+        <h2 class="text-2xl font-bold text-slate-900 mt-2">Register PG / Room, Track Enrolled Students &amp; Receive Live Complaints</h2>
+        <p class="text-sm text-slate-500">Register a PG or room from your phone — it shows up live to customers. When a customer enrolls or sends a complaint, it appears here immediately.</p>
       </div>
     </div>
 
-    <!-- 1. WEBSITE-BOOKED BEDS (₹100/BED/MONTH) + MONTHLY DATE & RENT PAYMENT LEDGER -->
+    <!-- 0. REGISTER NEW PG / ROOM FORM (SHOWN LIVE TO CUSTOMERS) -->
+    <div class="bg-white rounded-2xl p-6 border-2 border-indigo-300 shadow-sm mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+        <div>
+          <span class="text-xs font-extrabold uppercase text-indigo-600">Owner Property Registration</span>
+          <h3 class="text-xl font-bold text-slate-900 mt-0.5">Register New PG / Room (Live on Customer Explore)</h3>
+        </div>
+        <span class="text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg">Instant Customer Sync</span>
+      </div>
+
+      <form onsubmit="registerOwnerRoom(event)" class="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">PG / Room Title</label>
+          <input type="text" id="newRoomTitle" required placeholder="e.g., Tiwari Residency Deluxe Room" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Category</label>
+          <select id="newRoomCategory" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold bg-white">
+            <option value="PG_HOSTEL">PG / Hostel</option>
+            <option value="PERSONAL_ROOM">Personal Room</option>
+            <option value="SHARING_ROOM">Sharing Room</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">City</label>
+          <input type="text" id="newRoomCity" required placeholder="e.g., Greater Noida" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Monthly Rent (₹)</label>
+          <input type="number" id="newRoomRent" required min="1000" value="6500" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Available Beds</label>
+          <input type="number" id="newRoomBeds" required min="1" max="20" value="2" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Initial Meter Reading</label>
+          <input type="number" id="newRoomMeter" required min="0" value="1050" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-semibold" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Included / Add-On Facility</label>
+          <input type="text" id="newRoomFacility" placeholder="e.g., High-Speed Wi-Fi + RO + Meals" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-slate-600 mb-1">Room / PG Photo (Optional)</label>
+          <input type="file" id="newRoomPhotoInput" accept="image/*" onchange="handleNewRoomPhotoSelect(event)" class="w-full text-[11px] border border-slate-300 rounded-lg p-1.5 bg-white" />
+        </div>
+        <div class="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center justify-between gap-3 pt-1">
+          <span class="text-xs text-slate-500">Registered listings are saved in shared state so customers see them immediately.</span>
+          <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs shadow transition">
+            + Publish PG / Room to Customers
+          </button>
+        </div>
+      </form>
+
+      <div id="ownerRegisteredListingsWrap" class="mt-5 pt-4 border-t border-slate-200">
+        <div class="text-xs font-bold uppercase text-slate-500 mb-2">Your Registered Properties &amp; Rooms</div>
+        <div id="ownerRegisteredListings" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+      </div>
+    </div>
+
+    <!-- 1. ENROLLED CUSTOMERS / WEBSITE-BOOKED BEDS (₹100/BED/MONTH) -->
     <div class="bg-white rounded-2xl p-6 border-2 border-amber-300 shadow-sm mb-6">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <span class="text-xs font-extrabold uppercase text-amber-700">Website Bookings &amp; Monthly Platform Fee</span>
-          <h3 class="text-xl font-bold text-slate-900 mt-0.5">₹100 Per Website-Booked Bed / Month + Rent Payment Dates</h3>
-          <p class="text-xs text-slate-500 mt-1">Each resident bed booked via StaySetu includes its monthly billing cycle date, rent payment status, and ₹100/bed platform fee.</p>
+          <span class="text-xs font-extrabold uppercase text-amber-700">Enrolled Residents &amp; Website Bookings</span>
+          <h3 class="text-xl font-bold text-slate-900 mt-0.5">Enrolled Students / Tenants Ledger (₹100 / Bed / Month)</h3>
+          <p class="text-xs text-slate-500 mt-1">Jab koi customer aapke PG/room mein enroll karta hai, uski detail, enrollment status, rent due date, aur ₹100/bed fee yahan turant dikhti hai.</p>
         </div>
         <div class="bg-indigo-950 text-white px-5 py-3.5 rounded-2xl text-right shrink-0">
-          <div class="text-[11px] text-indigo-300 uppercase font-bold">Owner Platform Charge (₹100 × Website Beds)</div>
+          <div class="text-[11px] text-indigo-300 uppercase font-bold">Owner Platform Charge (₹100 × Enrolled Beds)</div>
           <div id="ownerMonthlyFeeTotal" class="text-2xl font-extrabold text-amber-400">₹0 / mo</div>
-          <div id="ownerBedBreakdown" class="text-[11px] text-indigo-200">0 Website-Booked Beds × ₹100/bed</div>
+          <div id="ownerBedBreakdown" class="text-[11px] text-indigo-200">0 Enrolled Bed(s) × ₹100/bed</div>
         </div>
       </div>
 
-      <!-- Website-Booked Beds & Monthly Rent Payment Table -->
       <div class="mt-4 overflow-x-auto">
         <table class="w-full text-left border-collapse text-xs">
           <thead>
             <tr class="bg-slate-100 text-slate-600 uppercase text-[11px]">
-              <th class="py-2.5 px-3 rounded-l-lg">Resident &amp; Room</th>
-              <th class="py-2.5 px-3">Move-In Date</th>
-              <th class="py-2.5 px-3">Monthly Due Date</th>
+              <th class="py-2.5 px-3 rounded-l-lg">Enrolled Customer &amp; Room</th>
+              <th class="py-2.5 px-3">Enrollment Status</th>
+              <th class="py-2.5 px-3">Move-In / Due Date</th>
               <th class="py-2.5 px-3">Monthly Rent + Light</th>
-              <th class="py-2.5 px-3">Rent Payment Status</th>
+              <th class="py-2.5 px-3">Payment Status</th>
               <th class="py-2.5 px-3 rounded-r-lg text-right">Platform Fee (₹100/Bed)</th>
             </tr>
           </thead>
           <tbody id="ownerWebsiteBedsTableBody" class="divide-y divide-slate-200">
             <tr>
-              <td colspan="6" class="py-5 text-center text-slate-400">No residents have completed move-in through the website yet.</td>
+              <td colspan="6" class="py-5 text-center text-slate-400">No customer has enrolled in your PG/room yet.</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- 2. OWNER SUB-METER LIGHT BILL PHOTO UPLOAD & RENT MERGER -->
+    <!-- 2. INSTANT COMPLAINTS QUEUE FROM CUSTOMERS -->
+    <div class="bg-white rounded-2xl p-6 border-2 border-rose-200 shadow-sm mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <span class="text-xs font-extrabold uppercase text-rose-600">Instant Customer Messages</span>
+          <h3 class="text-lg font-bold text-slate-900 mt-0.5">Live Customer Complaints Inbox</h3>
+        </div>
+        <span id="ownerComplaintCountBadge" class="text-xs font-bold bg-rose-100 text-rose-800 px-3 py-1 rounded-full">0 Complaints</span>
+      </div>
+      <div id="ownerComplaintsList" class="mt-4 space-y-2.5">
+        <p class="text-xs text-slate-400">No complaints received from customers yet.</p>
+      </div>
+    </div>
+
+    <!-- 3. OWNER SUB-METER LIGHT BILL PHOTO UPLOAD -->
     <div class="bg-white rounded-2xl p-6 border border-indigo-200 shadow-sm mb-6">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
         <div>
           <span class="text-xs font-extrabold uppercase text-indigo-600">Owner Electricity Billing</span>
           <h3 class="text-lg font-bold text-slate-900 mt-0.5">Upload Sub-Meter Photo &amp; Calculate Electricity Bill (@ ₹8/Unit)</h3>
-          <p class="text-xs text-slate-500">Upload the sub-meter photo and enter the new unit reading — the calculated electricity amount merges directly with the tenant's monthly rent.</p>
         </div>
         <span class="text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg">Rate: ₹8 / Unit</span>
       </div>
 
       <div id="ownerNoActiveTenantBillNotice" class="p-4 bg-slate-50 rounded-xl text-xs text-slate-500 text-center">
-        Complete a customer move-in first to upload sub-meter photos and issue combined monthly bills.
+        Complete a customer enrollment/move-in first to upload sub-meter photos and issue combined monthly bills.
       </div>
 
       <div id="ownerMeterBillingForm" class="hidden grid lg:grid-cols-3 gap-5 items-start">
         <div class="lg:col-span-2 grid sm:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
           <div class="sm:col-span-2 text-xs text-slate-700">
-            Active Resident: <strong id="ownerBillTenantName"></strong> • Property: <strong id="ownerBillRoomName"></strong>
+            Enrolled Resident: <strong id="ownerBillTenantName"></strong> • Property: <strong id="ownerBillRoomName"></strong>
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-slate-500 uppercase">Previous Meter Reading</label>
@@ -589,21 +669,19 @@
           </div>
         </div>
 
-        <!-- Owner Meter Photo Preview Card -->
         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
           <img id="ownerMeterPreviewImg" src="" alt="Owner Sub-Meter Preview" class="w-full h-36 object-cover rounded-lg bg-slate-200 border border-slate-300" />
           <span class="text-[11px] font-bold text-slate-600 block mt-2">Sub-Meter Photo Preview</span>
-          <span class="text-[10px] text-slate-400 block">Attached automatically to the tenant's monthly bill</span>
         </div>
       </div>
     </div>
 
-    <!-- 3. SOS INBOX + SCOPED SIREN -->
-    <div class="grid lg:grid-cols-2 gap-6 mb-6">
+    <!-- 4. SOS INBOX + SCOPED SIREN -->
+    <div class="grid lg:grid-cols-2 gap-6">
       <div class="bg-white rounded-2xl p-6 border-2 border-red-200 shadow-sm">
         <div class="flex items-center justify-between">
           <h3 class="text-lg font-bold text-slate-900">Incoming Tenant SOS Alerts</h3>
-          <span class="text-xs font-bold bg-red-100 text-red-800 px-2.5 py-0.5 rounded-full">Action Required</span>
+          <span class="text-xs font-bold bg-red-100 text-red-800 px-2.5 py-0.5 rounded-full">Urgent</span>
         </div>
 
         <div id="ownerSosEmpty" class="mt-4 p-4 bg-slate-50 rounded-xl text-xs text-slate-500 text-center">
@@ -642,7 +720,7 @@
           </div>
           <h3 class="text-xl font-bold mt-3">Property-Scoped Emergency Alarm Ring</h3>
           <p class="text-xs text-indigo-200 mt-1 leading-relaxed">
-            For fire, gas leaks, or electrical hazards, the owner can trigger an emergency alarm ring scoped strictly to registered tenants of <strong><span id="ownerScopedPropLabel" class="text-amber-300 font-bold"></span></strong>.
+            Trigger an emergency alarm ring scoped strictly to registered tenants of <strong><span id="ownerScopedPropLabel" class="text-amber-300 font-bold"></span></strong>.
           </p>
 
           <div class="mt-4 space-y-2.5">
@@ -662,14 +740,6 @@
             Stop Siren
           </button>
         </div>
-      </div>
-    </div>
-
-    <!-- 4. COMPLAINTS QUEUE -->
-    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-      <h3 class="text-lg font-bold text-slate-900">Tenant Complaints Queue</h3>
-      <div id="ownerComplaintsList" class="mt-4 space-y-2.5">
-        <p class="text-xs text-slate-400">No open maintenance complaints.</p>
       </div>
     </div>
   </section>
@@ -722,12 +792,13 @@
       </div>
       <div class="mt-5 flex justify-end gap-2">
         <button onclick="closePartnerModal()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700">← Back</button>
-        <button id="modalConfirmBookBtn" class="px-4 py-2 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white">Accept T&amp;C &amp; Lock Room</button>
+        <button id="modalConfirmBookBtn" class="px-4 py-2 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white">Accept T&amp;C &amp; Enroll</button>
       </div>
     </div>
   </div>
 
   <script>
+    const STORAGE_KEY = "STAYSETU_SHARED_STATE_V1";
     const OWNER_FEE_PER_BED = 100;
     const LATE_FEE_PER_DAY = 300;
     const RATE_PER_UNIT = 8;
@@ -743,10 +814,11 @@
       </svg>
     `);
 
-    const roomsData = [
+    const initialRooms = [
       {
-        id: "PG-101", propertyId: "PROP-APNA-GHAR", category: "PG_HOSTEL", badge: "PG / Hostel • Economy",
-        title: "Apna Ghar Student PG (Budget)", baseRent: 4500, facilityFee: 300, token: 500, meter: 1120, bedsBooked: 1,
+        id: "PG-101", ownerName: "Apna Ghar Management", city: "Greater Noida", category: "PG_HOSTEL",
+        badge: "PG / Hostel • Economy", title: "Apna Ghar Student PG (Budget)",
+        baseRent: 4500, facilityFee: 300, token: 500, meter: 1120, bedsBooked: 1, availableBeds: 4, isOwnerCreated: false,
         img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80",
         options: [
           { key: "food", label: "2-Time Homestyle Meals (Lunch + Dinner)", price: 1500, selected: false },
@@ -755,38 +827,9 @@
         ]
       },
       {
-        id: "PG-102", propertyId: "PROP-SUNRISE-PG", category: "PG_HOSTEL", badge: "PG / Hostel • Standard",
-        title: "Sunrise Executive Student PG", baseRent: 5800, facilityFee: 500, token: 500, meter: 1240, bedsBooked: 1,
-        img: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=600&q=80",
-        options: [
-          { key: "food", label: "3-Time Meals (Breakfast, Lunch, Dinner)", price: 2000, selected: true },
-          { key: "furnished", label: "Fully Furnished (Study Desk + Geyser)", price: 800, selected: true },
-          { key: "gym", label: "Basic In-House Gym Access", price: 600, selected: false }
-        ]
-      },
-      {
-        id: "PG-103", propertyId: "PROP-ROYAL-NEST", category: "PG_HOSTEL", badge: "PG / Hostel • Luxury",
-        title: "RoyalNest Luxury Hostel & Residences", baseRent: 9500, facilityFee: 1000, token: 1000, meter: 2040, bedsBooked: 1,
-        img: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600&q=80",
-        options: [
-          { key: "food", label: "4-Time Multi-Cuisine Meals", price: 2800, selected: true },
-          { key: "gym", label: "24x7 Gym, Sauna & Rooftop Lounge", price: 1200, selected: true },
-          { key: "furnished", label: "Luxury Furnished (Smart TV, AC, Mini Fridge)", price: 1500, selected: true }
-        ]
-      },
-      {
-        id: "PR-201", propertyId: "PROP-SHANTI-NIWAS", category: "PERSONAL_ROOM", badge: "Personal Room • Economy",
-        title: "Shanti Niwas Terrace Room", baseRent: 4200, facilityFee: 300, token: 500, meter: 310, bedsBooked: 1,
-        img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
-        options: [
-          { key: "furnished", label: "Semi-Furnished (Single Bed + Table)", price: 600, selected: false },
-          { key: "large_chhat", label: "Private Terrace + Air Cooler", price: 500, selected: true },
-          { key: "food", label: "Optional Nearby Tiffin Plan", price: 2200, selected: false }
-        ]
-      },
-      {
-        id: "PR-202", propertyId: "PROP-GREENVIEW", category: "PERSONAL_ROOM", badge: "Personal Room • Semi-Furnished",
-        title: "GreenView 1RK Private Room", baseRent: 6200, facilityFee: 600, token: 500, meter: 510, bedsBooked: 1,
+        id: "PR-202", ownerName: "GreenView Properties", city: "Greater Noida", category: "PERSONAL_ROOM",
+        badge: "Personal Room • Semi-Furnished", title: "GreenView 1RK Private Room",
+        baseRent: 6200, facilityFee: 600, token: 500, meter: 510, bedsBooked: 1, availableBeds: 2, isOwnerCreated: false,
         img: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=600&q=80",
         options: [
           { key: "furnished", label: "Upgrade to Fully Furnished (Geyser + Wardrobe)", price: 1100, selected: true },
@@ -795,37 +838,9 @@
         ]
       },
       {
-        id: "PR-203", propertyId: "PROP-ELITE-HEIGHTS", category: "PERSONAL_ROOM", badge: "Personal Room • Spacious Suite",
-        title: "EliteHeights Spacious 1BHK Suite", baseRent: 11000, facilityFee: 1000, token: 1000, meter: 940, bedsBooked: 1,
-        img: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80",
-        options: [
-          { key: "furnished", label: "Luxury Furnished (Sofa, AC, Washing Machine)", price: 2000, selected: true },
-          { key: "gym", label: "Clubhouse Gym + Pool Access", price: 1000, selected: true },
-          { key: "food", label: "Daily Homestyle Meal Delivery", price: 2800, selected: false }
-        ]
-      },
-      {
-        id: "SR-301", propertyId: "PROP-VIDYAVIHAR", category: "SHARING_ROOM", badge: "3-Sharing • Economy",
-        title: "VidyaVihar 3-Sharing Student Room", baseRent: 3200, facilityFee: 300, token: 500, meter: 620, bedsBooked: 1,
-        img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80",
-        options: [
-          { key: "furnished", label: "Semi-Furnished (3 Beds + Study Desks)", price: 500, selected: true },
-          { key: "large_chhat", label: "Terrace Study & Drying Area", price: 300, selected: false },
-          { key: "food", label: "Shared Tiffin Service", price: 1600, selected: false }
-        ],
-        partner: {
-          name: "Aman & Deepak (20 yrs)", hometown: "Gorakhpur & Prayagraj, UP",
-          occupation: "B.Tech 2nd Year Students", habits: "Budget-Friendly • Exam-Focused • Early Sleepers",
-          terms: [
-            "Electricity sub-meter charges are split equally (1/3rd each) among all three roommates.",
-            "Lights out after 10:30 PM and headphones are mandatory for calls or media.",
-            "Shared room cleaning is rotated every Sunday."
-          ]
-        }
-      },
-      {
-        id: "SR-302", propertyId: "PROP-METROLINK", category: "SHARING_ROOM", badge: "2-Sharing • Standard",
-        title: "MetroLink Twin-Sharing Flat Room", baseRent: 4500, facilityFee: 500, token: 500, meter: 890, bedsBooked: 1,
+        id: "SR-302", ownerName: "MetroLink Co-Living", city: "Greater Noida", category: "SHARING_ROOM",
+        badge: "2-Sharing • Standard", title: "MetroLink Twin-Sharing Flat Room",
+        baseRent: 4500, facilityFee: 500, token: 500, meter: 890, bedsBooked: 1, availableBeds: 1, isOwnerCreated: false,
         img: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=600&q=80",
         options: [
           { key: "furnished", label: "Fully Furnished Twin Beds + Wardrobes", price: 900, selected: true },
@@ -836,47 +851,71 @@
           name: "Rohan Verma (21 yrs)", hometown: "Lucknow, UP",
           occupation: "B.Tech CSE 3rd Year Student", habits: "Non-Smoker • Early Riser • Quiet Study Environment",
           terms: [
-            "Quiet hours begin at 11:00 PM with no loud music or speaker calls.",
-            "Smoking and alcohol are strictly prohibited inside the room.",
-            "Electricity bill, Wi-Fi (₹400/head), and cleaning charges are split 50/50."
-          ]
-        }
-      },
-      {
-        id: "SR-303", propertyId: "PROP-SKYLINE", category: "SHARING_ROOM", badge: "2-Sharing • Luxury Condo",
-        title: "Skyline High-Rise 2-Sharing Master Room", baseRent: 8000, facilityFee: 1000, token: 1000, meter: 1420, bedsBooked: 1,
-        img: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600&q=80",
-        options: [
-          { key: "furnished", label: "Luxury Furnished (Split AC, Attached Bath, Balcony)", price: 1500, selected: true },
-          { key: "gym", label: "Clubhouse Gym, Pool & Co-Working Lounge", price: 1000, selected: true },
-          { key: "large_chhat", label: "Sky-Deck Terrace Access", price: 500, selected: false }
-        ],
-        partner: {
-          name: "Karan Malhotra (25 yrs)", hometown: "Chandigarh",
-          occupation: "Product Analyst", habits: "Fitness Enthusiast • Weekend Traveler • Neat & Tidy",
-          terms: [
-            "Keep common living and kitchen areas clean immediately after use.",
-            "Night AC usage runs on a shared schedule with a 50/50 utility split.",
-            "No loud gatherings on weekdays (Monday to Friday)."
+            "Electricity sub-meter charges are split equally among roommates.",
+            "Quiet hours begin at 11:00 PM.",
+            "Smoking and alcohol are strictly prohibited inside the room."
           ]
         }
       }
     ];
 
+    function getDefaultSharedState() {
+      return {
+        rooms: initialRooms,
+        enrollments: [], // Array of enrolled customer records visible to Owner
+        complaints: [],  // Array of complaints visible immediately in Owner Portal
+        bill: null,
+        customerSos: null,
+        propertySiren: null,
+        lastEventTimestamp: Date.now(),
+        lastEventSummary: ""
+      };
+    }
+
+    let shared = loadSharedState();
+    let currentUser = null; // Session user in this tab/phone
     let currentCategoryFilter = 'ALL';
     let currentBudgetFilter = 'ALL';
     let selectedMeterPhotoData = null;
+    let newRoomPhotoData = null;
     let sirenAudioInterval = null;
     let audioCtx = null;
 
-    let state = {
-      user: null,
-      lastCustomerName: null,
-      booking: null,
-      bill: null,
-      customerSos: null,
-      propertySiren: null
-    };
+    function loadSharedState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          const init = getDefaultSharedState();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(init));
+          return init;
+        }
+        return JSON.parse(raw);
+      } catch (_) {
+        return getDefaultSharedState();
+      }
+    }
+
+    function saveSharedState(eventSummary = "") {
+      shared.lastEventTimestamp = Date.now();
+      if (eventSummary) shared.lastEventSummary = eventSummary;
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
+      } catch (_) {}
+      refreshVisibleViews();
+    }
+
+    function showLiveToast(title, message) {
+      const box = document.getElementById('liveToastBanner');
+      document.getElementById('liveToastTitle').innerText = title;
+      document.getElementById('liveToastMessage').innerText = message;
+      box.classList.remove('hidden');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => box.classList.add('hidden'), 5000);
+    }
+
+    function hideLiveToast() {
+      document.getElementById('liveToastBanner').classList.add('hidden');
+    }
 
     function formatDisplayDate(dateObj) {
       return dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -911,15 +950,16 @@
     }
 
     function calculateRoomPrice(room) {
-      const extras = room.options.reduce((sum, opt) => opt.selected ? sum + opt.price : sum, 0);
-      return room.baseRent + extras;
+      const extras = (room.options || []).reduce((sum, opt) => opt.selected ? sum + opt.price : sum, 0);
+      return Number(room.baseRent) + extras;
     }
 
     function toggleFacilityOption(roomId, optKey) {
-      const room = roomsData.find(r => r.id === roomId);
-      const opt = room.options.find(o => o.key === optKey);
-      opt.selected = !opt.selected;
-      renderRooms();
+      const room = shared.rooms.find(r => r.id === roomId);
+      if (!room) return;
+      const opt = (room.options || []).find(o => o.key === optKey);
+      if (opt) opt.selected = !opt.selected;
+      saveSharedState();
     }
 
     function setLoginRoleFlag(role) {
@@ -938,7 +978,7 @@
         custFields.classList.add('hidden');
         ownFields.classList.remove('hidden');
         heading.innerText = "Owner Login";
-        subtext.innerText = "Sign in to manage website-booked beds (₹100/bed), meter photos, and scoped sirens.";
+        subtext.innerText = "Register PGs/Rooms, view enrolled customers, and receive instant complaints.";
         submitBtn.innerText = "Login to Owner Portal →";
         submitBtn.className = "w-full bg-amber-500 hover:bg-amber-600 text-indigo-950 font-extrabold py-3 rounded-lg shadow-md transition mt-2";
       } else {
@@ -947,7 +987,7 @@
         ownFields.classList.add('hidden');
         custFields.classList.remove('hidden');
         heading.innerText = "Customer Login";
-        subtext.innerText = "Enter your student or tenant details to continue.";
+        subtext.innerText = "Browse owner-registered stays, enroll in a room, and send complaints.";
         submitBtn.innerText = "Explore Verified Stays →";
         submitBtn.className = "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg shadow-md transition mt-2";
       }
@@ -962,18 +1002,18 @@
       if (roleFlag === 'OWNER') {
         const pin = document.getElementById('ownerPinInput').value.trim();
         if (!pin || pin.length < 4) {
-          alert("Please enter a valid owner security PIN.");
+          alert("Please enter a valid owner security PIN (at least 4 digits).");
           return;
         }
-        state.user = {
+        currentUser = {
           name,
           phone,
           role: 'OWNER',
-          propertyName: document.getElementById('ownerPropertyName').value.trim() || 'Registered Property'
+          propertyName: document.getElementById('ownerPropertyName').value.trim() || `${name}'s Property`
         };
         document.getElementById('loginSection').classList.add('hidden');
         document.getElementById('navUserArea').classList.remove('hidden');
-        document.getElementById('navRoleBadge').innerText = `OWNER • ${state.user.name}`;
+        document.getElementById('navRoleBadge').innerText = `OWNER • ${currentUser.name}`;
         document.getElementById('customerNavGroup').classList.add('hidden');
         document.getElementById('ownerNavGroup').classList.remove('hidden');
         document.getElementById('ownerNavGroup').classList.add('flex');
@@ -981,8 +1021,7 @@
         return;
       }
 
-      state.lastCustomerName = name;
-      state.user = {
+      currentUser = {
         name,
         phone,
         role: 'CUSTOMER',
@@ -993,20 +1032,21 @@
 
       document.getElementById('loginSection').classList.add('hidden');
       document.getElementById('navUserArea').classList.remove('hidden');
-      document.getElementById('navRoleBadge').innerText = `CUSTOMER • ${state.user.name}`;
+      document.getElementById('navRoleBadge').innerText = `CUSTOMER • ${currentUser.name}`;
       document.getElementById('ownerNavGroup').classList.add('hidden');
       document.getElementById('customerNavGroup').classList.remove('hidden');
       document.getElementById('customerNavGroup').classList.add('flex');
-      document.getElementById('displayTargetCity').innerText = state.user.currentCity;
+      document.getElementById('displayTargetCity').innerText = currentUser.currentCity;
 
       renderRooms();
-      if (state.booking) switchCustomerView('dashboard');
+      const myBooking = getCurrentCustomerBooking();
+      if (myBooking) switchCustomerView('dashboard');
       else switchCustomerView('explore');
     }
 
     function logoutSession() {
       stopSirenAudio();
-      state.user = null;
+      currentUser = null;
       document.getElementById('ownerPinInput').value = '';
       document.getElementById('navUserArea').classList.add('hidden');
       document.getElementById('exploreSection').classList.add('hidden');
@@ -1017,8 +1057,8 @@
     }
 
     function handleBrandClick() {
-      if (!state.user) return;
-      if (state.user.role === 'OWNER') showOwnerPortal();
+      if (!currentUser) return;
+      if (currentUser.role === 'OWNER') showOwnerPortal();
       else switchCustomerView('explore');
     }
 
@@ -1027,6 +1067,7 @@
       if (subView === 'explore') {
         document.getElementById('dashboardSection').classList.add('hidden');
         document.getElementById('exploreSection').classList.remove('hidden');
+        renderRooms();
       } else {
         document.getElementById('exploreSection').classList.add('hidden');
         document.getElementById('dashboardSection').classList.remove('hidden');
@@ -1041,6 +1082,96 @@
       document.getElementById('ownerSection').classList.remove('hidden');
       renderOwnerPortal();
       evaluateSirenVisibility();
+    }
+
+    function refreshVisibleViews() {
+      if (!currentUser) return;
+      if (currentUser.role === 'OWNER') {
+        renderOwnerPortal();
+      } else {
+        renderRooms();
+        renderDashboard();
+      }
+      evaluateSirenVisibility();
+    }
+
+    function getCurrentCustomerBooking() {
+      if (!shared.enrollments.length) return null;
+      if (currentUser && currentUser.role === 'CUSTOMER') {
+        const exact = shared.enrollments.find(e => e.tenantPhone === currentUser.phone || e.tenantName === currentUser.name);
+        if (exact) return exact;
+      }
+      return shared.enrollments[shared.enrollments.length - 1] || null;
+    }
+
+    // OWNER REGISTERS NEW PG / ROOM -> SHOWS IN CUSTOMER EXPLORE
+    function handleNewRoomPhotoSelect(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        newRoomPhotoData = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function registerOwnerRoom(e) {
+      e.preventDefault();
+      const title = document.getElementById('newRoomTitle').value.trim();
+      const category = document.getElementById('newRoomCategory').value;
+      const city = document.getElementById('newRoomCity').value.trim() || 'Greater Noida';
+      const baseRent = parseInt(document.getElementById('newRoomRent').value, 10) || 5000;
+      const availableBeds = parseInt(document.getElementById('newRoomBeds').value, 10) || 1;
+      const meter = parseInt(document.getElementById('newRoomMeter').value, 10) || 1000;
+      const facilityText = document.getElementById('newRoomFacility').value.trim() || 'High-Speed Wi-Fi & Power Backup';
+
+      const catLabelMap = {
+        PG_HOSTEL: 'PG / Hostel • Owner Listed',
+        PERSONAL_ROOM: 'Personal Room • Owner Listed',
+        SHARING_ROOM: 'Sharing Room • Owner Listed'
+      };
+
+      const defaultImgs = {
+        PG_HOSTEL: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80",
+        PERSONAL_ROOM: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=600&q=80",
+        SHARING_ROOM: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=600&q=80"
+      };
+
+      const newRoom = {
+        id: "OWN-" + Math.floor(100 + Math.random() * 900),
+        ownerName: currentUser ? (currentUser.propertyName || currentUser.name) : "Property Owner",
+        city,
+        category,
+        badge: catLabelMap[category] || "Owner Listed Stay",
+        title,
+        baseRent,
+        facilityFee: 400,
+        token: 500,
+        meter,
+        bedsBooked: 1,
+        availableBeds,
+        isOwnerCreated: true,
+        img: newRoomPhotoData || defaultImgs[category],
+        options: [
+          { key: "custom_fac", label: facilityText, price: 0, selected: true },
+          { key: "meals", label: "Optional Homestyle Meals", price: 1800, selected: false },
+          { key: "cleaning", label: "Room Cleaning & Laundry", price: 600, selected: false }
+        ]
+      };
+
+      shared.rooms.unshift(newRoom);
+      document.getElementById('newRoomTitle').value = "";
+      document.getElementById('newRoomFacility').value = "";
+      document.getElementById('newRoomPhotoInput').value = "";
+      newRoomPhotoData = null;
+
+      saveSharedState(`New property "${title}" registered by owner and live for customers.`);
+      showLiveToast("Property Registered", `"${title}" is now visible in Customer Explore.`);
+    }
+
+    function deleteOwnerRoom(roomId) {
+      shared.rooms = shared.rooms.filter(r => r.id !== roomId);
+      saveSharedState(`Removed property ${roomId}.`);
     }
 
     function filterCategory(cat) {
@@ -1069,9 +1200,10 @@
 
     function renderRooms() {
       const grid = document.getElementById('roomsGrid');
+      if (!grid) return;
       const sortOrder = document.getElementById('sortOrderSelect').value;
 
-      let filtered = roomsData.filter(r => {
+      let filtered = shared.rooms.filter(r => {
         const catMatch = currentCategoryFilter === 'ALL' || r.category === currentCategoryFilter;
         const price = calculateRoomPrice(r);
         let budMatch = true;
@@ -1089,16 +1221,18 @@
       grid.innerHTML = filtered.map(room => {
         const dynamicRent = calculateRoomPrice(room);
         return `
-        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+        <div class="bg-white rounded-2xl border ${room.isOwnerCreated ? 'border-amber-400 ring-2 ring-amber-200/60' : 'border-slate-200'} overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
           <div>
             <div class="relative h-44">
               <img src="${room.img}" alt="${room.title}" class="w-full h-full object-cover" />
               <span class="absolute top-3 left-3 bg-indigo-950/90 text-white text-xs font-semibold px-3 py-1 rounded-full">${room.badge}</span>
-              <span class="absolute bottom-3 right-3 bg-emerald-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded">Deposit Protected</span>
+              ${room.isOwnerCreated
+                ? `<span class="absolute top-3 right-3 bg-amber-400 text-indigo-950 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">NEW OWNER LISTING</span>`
+                : `<span class="absolute bottom-3 right-3 bg-emerald-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded">Deposit Protected</span>`}
             </div>
             <div class="p-5">
               <h3 class="text-lg font-bold text-slate-900">${room.title}</h3>
-              <p class="text-xs text-slate-500 mt-0.5">${state.user ? state.user.currentCity : 'City Center'} • Base Rent: ₹${room.baseRent}/mo</p>
+              <p class="text-xs text-slate-500 mt-0.5">${room.city || 'Greater Noida'} • Owner: <strong>${room.ownerName || 'Property Owner'}</strong> • ${room.availableBeds || 1} Bed(s) Open</p>
 
               ${room.partner ? `
                 <div class="mt-3 p-2.5 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-between">
@@ -1115,13 +1249,13 @@
               <div class="mt-3.5">
                 <div class="text-[11px] font-bold uppercase text-slate-500 mb-1.5">Customize Facilities:</div>
                 <div class="space-y-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200/70">
-                  ${room.options.map(opt => `
+                  ${(room.options || []).map(opt => `
                     <label class="flex items-center justify-between text-xs cursor-pointer hover:bg-white p-1 rounded transition">
                       <span class="flex items-center gap-2 text-slate-700">
                         <input type="checkbox" ${opt.selected ? 'checked' : ''} onchange="toggleFacilityOption('${room.id}', '${opt.key}')" class="rounded text-indigo-600 focus:ring-0" />
                         <span>${opt.label}</span>
                       </span>
-                      <span class="font-semibold ${opt.selected ? 'text-indigo-700' : 'text-slate-400'}">+₹${opt.price}</span>
+                      <span class="font-semibold ${opt.selected ? 'text-indigo-700' : 'text-slate-400'}">${opt.price > 0 ? '+₹' + opt.price : 'Included'}</span>
                     </label>
                   `).join('')}
                 </div>
@@ -1129,7 +1263,7 @@
 
               <div class="mt-3.5 grid grid-cols-2 gap-2 bg-indigo-950 text-white p-3 rounded-xl text-xs">
                 <div>
-                  <span class="text-indigo-300 block text-[11px]">Final Monthly Rent</span>
+                  <span class="text-indigo-300 block text-[11px]">Monthly Rent</span>
                   <strong class="text-base text-amber-400">₹${dynamicRent}/mo</strong>
                 </div>
                 <div>
@@ -1140,9 +1274,9 @@
             </div>
           </div>
 
-          <div class="px-5 pb-5">
+          <div class="px-5 pb-5 space-y-2">
             <button onclick="initiateBooking('${room.id}')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl text-sm transition">
-              Lock for 5 Days (Pay ₹${room.token} Token)
+              Enroll &amp; Lock for 5 Days (₹${room.token} Token)
             </button>
           </div>
         </div>
@@ -1150,7 +1284,7 @@
     }
 
     function openPartnerModal(roomId) {
-      const room = roomsData.find(r => r.id === roomId);
+      const room = shared.rooms.find(r => r.id === roomId);
       if (!room || !room.partner) return;
       document.getElementById('modalRoomTitle').innerText = room.title;
       document.getElementById('modalPartnerInfo').innerHTML = `
@@ -1165,54 +1299,70 @@
     }
     function closePartnerModal() { document.getElementById('partnerModal').classList.add('hidden'); }
     function initiateBooking(roomId) {
-      const room = roomsData.find(r => r.id === roomId);
-      if (room.category === 'SHARING_ROOM') openPartnerModal(roomId);
+      const room = shared.rooms.find(r => r.id === roomId);
+      if (room && room.category === 'SHARING_ROOM' && room.partner) openPartnerModal(roomId);
       else bookWithToken(roomId);
     }
 
+    // CUSTOMER ENROLLS -> SHOWS IN OWNER PORTAL IMMEDIATELY
     function bookWithToken(roomId) {
-      if (state.booking && state.booking.status !== 'FINAL_CHECKOUT_COMPLETED') {
-        alert("You already have an active booking. Complete or discard it first.");
+      const existing = getCurrentCustomerBooking();
+      if (existing && existing.status !== 'FINAL_CHECKOUT_COMPLETED') {
+        alert("You already have an active enrollment. Cancel or vacate it first to enroll elsewhere.");
         switchCustomerView('dashboard');
         return;
       }
-      const room = roomsData.find(r => r.id === roomId);
+      const room = shared.rooms.find(r => r.id === roomId);
+      if (!room) return;
       const finalRent = calculateRoomPrice(room);
-      const selectedLabels = room.options.filter(o => o.selected).map(o => o.label);
+      const selectedLabels = (room.options || []).filter(o => o.selected).map(o => o.label);
+      const now = new Date();
+      const nextDue = new Date(now);
+      nextDue.setMonth(nextDue.getMonth() + 1);
 
-      state.bill = null;
-      selectedMeterPhotoData = null;
-      state.booking = {
-        tenantName: state.user ? state.user.name : "Resident",
-        room: { ...room, finalRent: finalRent, deposit: finalRent },
+      const tenantName = currentUser ? currentUser.name : "Enrolled Customer";
+      const tenantPhone = currentUser ? currentUser.phone : "9876543210";
+
+      const newEnrollment = {
+        id: "ENR-" + Math.floor(1000 + Math.random() * 9000),
+        tenantName,
+        tenantPhone,
+        room: { ...room, finalRent, deposit: finalRent, bedsBooked: room.bedsBooked || 1 },
         selectedFacilities: selectedLabels.length ? selectedLabels.join(' • ') : 'Standard Base Room',
         status: 'TOKEN_LOCKED',
         initDeposit: finalRent,
         currDeposit: finalRent,
         kycLast4: null,
-        moveInDate: null,
-        nextDueDate: null,
+        enrolledDate: formatDisplayDate(now),
+        moveInDate: formatDisplayDate(now),
+        nextDueDate: formatDisplayDate(nextDue),
         checkoutSummary: null,
-        addOns: [],
-        complaints: []
+        addOns: []
       };
-      alert(`Token Paid: ₹${room.token}. "${room.title}" is now locked for 5 days.`);
+
+      shared.enrollments.push(newEnrollment);
+      shared.bill = null;
+      selectedMeterPhotoData = null;
+
+      saveSharedState(`${tenantName} enrolled in ${room.title} (Token Locked).`);
+      showLiveToast("Enrollment Recorded", `${tenantName} enrolled in ${room.title}. Visible in Owner Portal.`);
       switchCustomerView('dashboard');
     }
 
     function discardBooking(skipConfirm = false) {
-      if (!state.booking) return;
-      if (!skipConfirm && !confirm("Are you sure you want to cancel/discard this booking?")) return;
-      state.booking = null;
-      state.bill = null;
-      state.customerSos = null;
+      const b = getCurrentCustomerBooking();
+      if (!b) return;
+      if (!skipConfirm && !confirm("Are you sure you want to cancel/vacate this room enrollment?")) return;
+      shared.enrollments = shared.enrollments.filter(e => e.id !== b.id);
+      shared.bill = null;
       selectedMeterPhotoData = null;
-      stopPropertySiren();
-      document.getElementById('billReceiptBox').classList.add('hidden');
+      saveSharedState(`${b.tenantName} vacated ${b.room.title}.`);
       switchCustomerView('explore');
     }
 
     function confirmFinalMoveIn() {
+      const b = getCurrentCustomerBooking();
+      if (!b) return;
       const last4 = document.getElementById('kycLast4Input').value.trim();
       if (!/^\d{4}$/.test(last4)) {
         alert("Please enter the last 4 digits of your ID (e.g., 4829).");
@@ -1222,12 +1372,13 @@
       const nextDue = new Date(now);
       nextDue.setMonth(nextDue.getMonth() + 1);
 
-      state.booking.kycLast4 = `XXXX-XXXX-${last4}`;
-      state.booking.status = 'ACTIVE_TENANT';
-      state.booking.moveInDate = formatDisplayDate(now);
-      state.booking.nextDueDate = formatDisplayDate(nextDue);
+      b.kycLast4 = `XXXX-XXXX-${last4}`;
+      b.status = 'ACTIVE_TENANT';
+      b.moveInDate = formatDisplayDate(now);
+      b.nextDueDate = formatDisplayDate(nextDue);
 
-      alert(`Booking confirmed! Move-In Date: ${state.booking.moveInDate} | Next Monthly Due Date: ${state.booking.nextDueDate}.`);
+      saveSharedState(`${b.tenantName} confirmed move-in for ${b.room.title}.`);
+      showLiveToast("Move-In Confirmed", `${b.tenantName} is now an active resident in ${b.room.title}.`);
       renderDashboard();
     }
 
@@ -1237,8 +1388,8 @@
       const reader = new FileReader();
       reader.onload = (ev) => {
         selectedMeterPhotoData = ev.target.result;
-        if (state.bill) {
-          state.bill.meterPhoto = selectedMeterPhotoData;
+        if (shared.bill) {
+          shared.bill.meterPhoto = selectedMeterPhotoData;
           document.getElementById('billMeterProofImg').src = selectedMeterPhotoData;
         }
         const ownerImg = document.getElementById('ownerMeterPreviewImg');
@@ -1252,36 +1403,39 @@
     }
 
     function updateLiveMeterPreview() {
-      if (!state.booking) return;
-      const prev = Number(document.getElementById('prevMeterInput').value) || state.booking.room.meter;
+      const b = getCurrentCustomerBooking();
+      if (!b) return;
+      const prev = Number(document.getElementById('prevMeterInput').value) || b.room.meter;
       const curr = Number(document.getElementById('currMeterInput').value) || prev;
       const units = Math.max(0, curr - prev);
       const elec = units * RATE_PER_UNIT;
-      const total = state.booking.room.finalRent + elec;
+      const total = b.room.finalRent + elec;
       document.getElementById('liveUnitsPreview').innerText = `${units} Units`;
       document.getElementById('liveElecPreview').innerText = `₹${elec}`;
       document.getElementById('liveTotalPreview').innerText = `₹${total}`;
     }
 
     function updateOwnerMeterPreview() {
-      if (!state.booking) return;
-      const prev = Number(document.getElementById('ownerPrevMeterInput').value) || state.booking.room.meter;
+      const b = getCurrentCustomerBooking();
+      if (!b) return;
+      const prev = Number(document.getElementById('ownerPrevMeterInput').value) || b.room.meter;
       const curr = Number(document.getElementById('ownerCurrMeterInput').value) || prev;
       const units = Math.max(0, curr - prev);
       const elec = units * RATE_PER_UNIT;
-      const total = state.booking.room.finalRent + elec;
+      const total = b.room.finalRent + elec;
       document.getElementById('ownerLiveUnits').innerText = `${units} Units`;
       document.getElementById('ownerLiveElec').innerText = `₹${elec}`;
       document.getElementById('ownerLiveCombined').innerText = `₹${total}`;
     }
 
     function generateMonthlyBill(sourceSide = 'CUSTOMER') {
-      if (!state.booking || state.booking.status === 'TOKEN_LOCKED' || state.booking.status === 'FINAL_CHECKOUT_COMPLETED') return;
-      const prev = state.booking.room.meter;
+      const b = getCurrentCustomerBooking();
+      if (!b || b.status === 'TOKEN_LOCKED' || b.status === 'FINAL_CHECKOUT_COMPLETED') return;
+      const prev = b.room.meter;
       const currInput = sourceSide === 'OWNER'
         ? document.getElementById('ownerCurrMeterInput')
         : document.getElementById('currMeterInput');
-      const curr = parseInt(currInput.value);
+      const curr = parseInt(currInput.value, 10);
 
       if (isNaN(curr) || curr < prev) {
         alert("Current meter reading must be greater than or equal to previous reading (" + prev + ").");
@@ -1290,11 +1444,11 @@
 
       const units = curr - prev;
       const elecAmount = units * RATE_PER_UNIT;
-      const rentAmount = state.booking.room.finalRent;
+      const rentAmount = b.room.finalRent;
       const photoToUse = selectedMeterPhotoData || defaultMeterSvg;
 
-      state.booking.room.meter = curr;
-      state.bill = {
+      b.room.meter = curr;
+      shared.bill = {
         rent: rentAmount,
         elec: elecAmount,
         units: units,
@@ -1307,82 +1461,100 @@
         paidDate: null
       };
 
-      if (sourceSide === 'OWNER') {
-        alert(`Sub-meter photo & combined bill (₹${rentAmount + elecAmount}) sent to ${state.booking.tenantName}!`);
-        renderOwnerPortal();
-      } else {
-        renderDashboard();
-      }
+      saveSharedState(`Combined bill ₹${rentAmount + elecAmount} generated for ${b.tenantName}.`);
+      showLiveToast("Monthly Bill Updated", `Total bill ₹${rentAmount + elecAmount} (${units} units) synced.`);
     }
 
     function simulateLateDays(days) {
-      if (!state.bill || state.bill.paid || state.booking.status === 'FINAL_CHECKOUT_COMPLETED') return;
+      const b = getCurrentCustomerBooking();
+      if (!shared.bill || shared.bill.paid || !b || b.status === 'FINAL_CHECKOUT_COMPLETED') return;
       const deductAmt = days * LATE_FEE_PER_DAY;
-      state.bill.overdueDays += days;
-      state.bill.deducted += deductAmt;
-      state.booking.currDeposit = Math.max(0, state.booking.currDeposit - deductAmt);
+      shared.bill.overdueDays += days;
+      shared.bill.deducted += deductAmt;
+      b.currDeposit = Math.max(0, b.currDeposit - deductAmt);
 
-      const halfDeposit = state.booking.initDeposit * 0.5;
-      if (state.booking.currDeposit <= 0) {
-        state.booking.status = 'FINAL_CHECKOUT_COMPLETED';
-        state.booking.checkoutSummary = {
+      const halfDeposit = b.initDeposit * 0.5;
+      if (b.currDeposit <= 0) {
+        b.status = 'FINAL_CHECKOUT_COMPLETED';
+        b.checkoutSummary = {
           heading: "Final Checkout Completed: Security Deposit Depleted to ₹0",
-          reason: "Late fee deductions have reduced the security deposit to ₹0 and triggered final checkout settlement.",
+          reason: "Late fee deductions have reduced the security deposit to ₹0.",
           remainingDeposit: 0,
-          pendingDue: state.bill.total,
-          netSettlement: -state.bill.total
+          pendingDue: shared.bill.total,
+          netSettlement: -shared.bill.total
         };
-      } else if (state.booking.currDeposit <= halfDeposit) {
-        state.booking.status = 'FINAL_CHECKOUT_NOTICE';
-        state.booking.checkoutSummary = {
+      } else if (b.currDeposit <= halfDeposit) {
+        b.status = 'FINAL_CHECKOUT_NOTICE';
+        b.checkoutSummary = {
           heading: "Final Checkout Notice: Security Deposit at or Below 50%",
           reason: "Your security deposit has dropped to 50% or less. Clear dues to prevent final checkout settlement.",
-          remainingDeposit: state.booking.currDeposit,
-          pendingDue: state.bill.total,
-          netSettlement: state.booking.currDeposit - state.bill.total
+          remainingDeposit: b.currDeposit,
+          pendingDue: shared.bill.total,
+          netSettlement: b.currDeposit - shared.bill.total
         };
       } else {
-        state.booking.status = 'LATE_GRACE_DEDUCTION';
+        b.status = 'LATE_GRACE_DEDUCTION';
       }
 
-      renderDashboard();
+      saveSharedState(`Simulated +${days} late days for ${b.tenantName}.`);
     }
 
     function settleBillAndDeposit() {
-      if (!state.bill) return;
-      const shortfall = state.booking.initDeposit - state.booking.currDeposit;
-      const totalPaid = state.bill.total + shortfall;
-      state.bill.paid = true;
-      state.bill.paidDate = formatDisplayDate(new Date());
-      state.booking.currDeposit = state.booking.initDeposit;
-      state.booking.status = 'ACTIVE_TENANT';
-      state.booking.checkoutSummary = null;
-      alert(`Payment successful: ₹${totalPaid}. Rent + Electricity bill settled on ${state.bill.paidDate} and deposit restored to 100%.`);
-      renderDashboard();
+      const b = getCurrentCustomerBooking();
+      if (!shared.bill || !b) return;
+      const shortfall = b.initDeposit - b.currDeposit;
+      const totalPaid = shared.bill.total + shortfall;
+      shared.bill.paid = true;
+      shared.bill.paidDate = formatDisplayDate(new Date());
+      b.currDeposit = b.initDeposit;
+      b.status = 'ACTIVE_TENANT';
+      b.checkoutSummary = null;
+      saveSharedState(`${b.tenantName} paid ₹${totalPaid} bill & restored deposit.`);
+      showLiveToast("Payment Settled", `₹${totalPaid} paid and deposit restored to 100%.`);
     }
 
     function toggleAddOn(serviceName) {
-      if (!state.booking.addOns.includes(serviceName)) {
-        state.booking.addOns.push(serviceName);
-        alert(`Added "${serviceName}" to your stay.`);
-        renderDashboard();
+      const b = getCurrentCustomerBooking();
+      if (!b) return;
+      if (!b.addOns.includes(serviceName)) {
+        b.addOns.push(serviceName);
+        saveSharedState(`Added ${serviceName} for ${b.tenantName}.`);
       }
     }
 
+    // CUSTOMER SENDS COMPLAINT -> INSTANT MESSAGE IN OWNER PORTAL
     function raiseComplaint() {
+      const b = getCurrentCustomerBooking();
       const cat = document.getElementById('complaintCat').value;
       const desc = document.getElementById('complaintDesc').value.trim();
-      if (!desc) { alert("Please enter a complaint description."); return; }
-      const id = "TKT-" + Math.floor(100 + Math.random() * 900);
-      state.booking.complaints.unshift({ id, cat, desc, status: "OPEN (24h SLA)" });
+      if (!desc) {
+        alert("Please enter your complaint message.");
+        return;
+      }
+      const ticket = {
+        id: "TKT-" + Math.floor(100 + Math.random() * 900),
+        tenantName: (currentUser && currentUser.name) || (b ? b.tenantName : "Customer"),
+        tenantPhone: (currentUser && currentUser.phone) || (b ? b.tenantPhone : ""),
+        roomTitle: b ? b.room.title : "Registered Property",
+        cat,
+        desc,
+        time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+        status: "OPEN (LIVE TO OWNER)"
+      };
+
+      shared.complaints.unshift(ticket);
       document.getElementById('complaintDesc').value = "";
-      renderDashboard();
-      renderOwnerPortal();
+      saveSharedState(`NEW COMPLAINT (${ticket.id}) from ${ticket.tenantName}: ${cat} - ${desc}`);
+      showLiveToast("Complaint Sent to Owner", `Ticket ${ticket.id} delivered live to the Owner Portal.`);
     }
 
     function resolveComplaintByOwner(ticketId) {
-      const t = state.booking.complaints.find(c => c.id === ticketId);
-      if (t) { t.status = "RESOLVED"; renderOwnerPortal(); }
+      const t = shared.complaints.find(c => c.id === ticketId);
+      if (t) {
+        t.status = "RESOLVED BY OWNER";
+        saveSharedState(`Complaint ${ticketId} resolved by owner.`);
+        showLiveToast("Complaint Resolved", `Ticket ${ticketId} marked as resolved.`);
+      }
     }
 
     function sendSupportMessage() {
@@ -1393,99 +1565,91 @@
       box.innerHTML += `<div class="bg-white border border-slate-200 p-2 rounded-lg text-right"><strong>You:</strong> ${msg}</div>`;
       input.value = "";
       setTimeout(() => {
-        box.innerHTML += `<div class="bg-indigo-100 text-indigo-950 p-2 rounded-lg"><strong>StaySetu Support:</strong> Ticket #SUP-${Math.floor(100+Math.random()*899)} logged. An agent will assist shortly.</div>`;
+        box.innerHTML += `<div class="bg-indigo-100 text-indigo-950 p-2 rounded-lg"><strong>StaySetu Support:</strong> Ticket #SUP-${Math.floor(100+Math.random()*899)} logged.</div>`;
         box.scrollTop = box.scrollHeight;
-      }, 400);
+      }, 300);
     }
 
     function openCustomerSosModal() { document.getElementById('customerSosModal').classList.remove('hidden'); }
     function closeCustomerSosModal() { document.getElementById('customerSosModal').classList.add('hidden'); }
 
     function submitCustomerSosToOwner() {
+      const b = getCurrentCustomerBooking();
       const issue = document.getElementById('customerSosPreset').value;
       const note = document.getElementById('customerSosNote').value.trim();
-      state.customerSos = { issue, note, ownerResponse: null };
+      shared.customerSos = {
+        tenantName: (currentUser && currentUser.name) || (b ? b.tenantName : "Customer"),
+        roomTitle: b ? b.room.title : "Registered Property",
+        issue,
+        note,
+        ownerResponse: null
+      };
       document.getElementById('customerSosNote').value = "";
       closeCustomerSosModal();
-      document.getElementById('ownerSosDot').classList.remove('hidden');
-      alert(`SOS sent to property owner (${state.booking.room.title}).`);
-      renderDashboard();
-      renderOwnerPortal();
+      saveSharedState(`SOS ALERT from ${shared.customerSos.tenantName}: ${issue}`);
+      showLiveToast("SOS Sent to Owner", "Emergency SOS alert sent directly to the Owner Portal.");
     }
 
     function ownerDispatchHelp(responseText) {
-      if (!state.customerSos) return;
-      state.customerSos.ownerResponse = responseText;
-      document.getElementById('ownerSosDot').classList.add('hidden');
-      alert(`Response sent to tenant: "${responseText}"`);
-      renderOwnerPortal();
-      renderDashboard();
+      if (!shared.customerSos) return;
+      shared.customerSos.ownerResponse = responseText;
+      saveSharedState(`Owner responded to SOS: ${responseText}`);
+      showLiveToast("Response Sent", responseText);
     }
 
     function ownerTriggerPropertySiren(customReason) {
-      const propName = state.booking ? state.booking.room.title : (state.user ? state.user.propertyName : "Registered Property");
+      const b = getCurrentCustomerBooking();
+      const propName = b ? b.room.title : (currentUser && currentUser.propertyName ? currentUser.propertyName : "Registered Property");
       const reason = customReason || document.getElementById('ownerSirenReasonSelect').value;
 
-      state.propertySiren = {
+      shared.propertySiren = {
         propertyName: propName,
         message: reason,
         active: true
       };
 
+      saveSharedState(`EMERGENCY SIREN activated for ${propName}.`);
       playEmergencySirenSound();
-      evaluateSirenVisibility();
-      alert(`Emergency siren ring activated for "${propName}" registered residents only.`);
     }
 
     function stopPropertySiren() {
-      state.propertySiren = null;
+      shared.propertySiren = null;
       stopSirenAudio();
-      document.getElementById('propertySirenBanner').classList.add('hidden');
+      saveSharedState("Emergency siren stopped by owner.");
     }
 
     function evaluateSirenVisibility() {
       const banner = document.getElementById('propertySirenBanner');
-      if (!state.propertySiren || !state.propertySiren.active) {
-        banner.classList.add('hidden');
-        return;
-      }
-
-      const viewerScope = document.getElementById('simulatedViewerSelect')
-        ? document.getElementById('simulatedViewerSelect').value
-        : 'SAME_PG';
-
-      if (viewerScope === 'SAME_PG' || (state.user && state.user.role === 'OWNER')) {
-        document.getElementById('sirenTargetPropertyName').innerText = state.propertySiren.propertyName;
-        document.getElementById('sirenAlertMessage').innerText = state.propertySiren.message;
-        banner.classList.remove('hidden');
-      } else {
+      if (!shared.propertySiren || !shared.propertySiren.active) {
         banner.classList.add('hidden');
         stopSirenAudio();
+        return;
       }
+      document.getElementById('sirenTargetPropertyName').innerText = shared.propertySiren.propertyName;
+      document.getElementById('sirenAlertMessage').innerText = shared.propertySiren.message;
+      banner.classList.remove('hidden');
     }
 
     function renderDashboard() {
-      if (!state.booking) {
+      const b = getCurrentCustomerBooking();
+      if (!b) {
         document.getElementById('noBookingBanner').classList.remove('hidden');
         document.getElementById('activeDashboardContent').classList.add('hidden');
-        document.getElementById('scopeSimulatorBar').classList.add('hidden');
         return;
       }
       document.getElementById('noBookingBanner').classList.add('hidden');
       document.getElementById('activeDashboardContent').classList.remove('hidden');
-
-      const b = state.booking;
 
       if (b.status === 'TOKEN_LOCKED') {
         document.getElementById('tokenLockCard').classList.remove('hidden');
         document.getElementById('activeTenantGrid').classList.add('hidden');
         document.getElementById('criticalBanner').classList.add('hidden');
         document.getElementById('finalCheckoutCard').classList.add('hidden');
-        document.getElementById('scopeSimulatorBar').classList.add('hidden');
 
         document.getElementById('lockedRoomTitle').innerText = `${b.room.title} (${b.room.badge})`;
         document.getElementById('lockedSelectedFacilities').innerText = `Selected Plan: ${b.selectedFacilities}`;
         document.getElementById('lockedTokenAmt').innerText = `₹${b.room.token}`;
+        document.getElementById('lockedOwnerName').innerText = b.room.ownerName || 'Property Owner';
         document.getElementById('calcDeposit').innerText = `₹${b.room.deposit}`;
         document.getElementById('calcAdvRent').innerText = `₹${b.room.finalRent * 2}`;
         document.getElementById('calcFacility').innerText = `₹${b.room.facilityFee}`;
@@ -1496,7 +1660,6 @@
 
       document.getElementById('tokenLockCard').classList.add('hidden');
       document.getElementById('activeTenantGrid').classList.remove('hidden');
-      document.getElementById('scopeSimulatorBar').classList.remove('hidden');
 
       if (b.status === 'FINAL_CHECKOUT_COMPLETED') {
         document.getElementById('finalCheckoutCard').classList.remove('hidden');
@@ -1521,14 +1684,14 @@
         document.getElementById('dashStatusBadge').className = "bg-rose-100 text-rose-800 text-xs font-bold px-2.5 py-0.5 rounded-full";
       } else {
         document.getElementById('criticalBanner').classList.add('hidden');
-        document.getElementById('dashStatusBadge').innerText = "ACTIVE TENANT";
+        document.getElementById('dashStatusBadge').innerText = "ENROLLED RESIDENT";
         document.getElementById('dashStatusBadge').className = "bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-0.5 rounded-full";
       }
 
       document.getElementById('dashKycBadge').innerText = `KYC Verified: ${b.kycLast4}`;
       document.getElementById('dashDueDateBadge').innerText = `Monthly Due Date: ${b.nextDueDate}`;
       document.getElementById('dashRoomTitle').innerText = b.room.title;
-      document.getElementById('dashRoomMeta').innerText = `${b.room.badge} • ${b.selectedFacilities}`;
+      document.getElementById('dashRoomMeta').innerText = `Owner: ${b.room.ownerName || 'Property Owner'} • ${b.selectedFacilities}`;
       document.getElementById('dashCurrDeposit').innerText = b.currDeposit;
       document.getElementById('dashInitDeposit').innerText = b.initDeposit;
 
@@ -1538,11 +1701,11 @@
       bar.style.width = `${pct}%`;
       bar.className = `h-3 rounded-full transition-all duration-500 ${pct <= 50 ? 'bg-red-600' : 'bg-emerald-500'}`;
 
-      if (state.customerSos) {
+      if (shared.customerSos) {
         document.getElementById('customerSosStatusBox').classList.remove('hidden');
-        document.getElementById('customerSosIssueText').innerText = `${state.customerSos.issue} ${state.customerSos.note ? '(' + state.customerSos.note + ')' : ''}`;
-        document.getElementById('customerSosOwnerActionText').innerText = state.customerSos.ownerResponse
-          ? `Owner Response: ${state.customerSos.ownerResponse}`
+        document.getElementById('customerSosIssueText').innerText = `${shared.customerSos.issue} ${shared.customerSos.note ? '(' + shared.customerSos.note + ')' : ''}`;
+        document.getElementById('customerSosOwnerActionText').innerText = shared.customerSos.ownerResponse
+          ? `Owner Response: ${shared.customerSos.ownerResponse}`
           : `Sent to Owner — Waiting for response...`;
       } else {
         document.getElementById('customerSosStatusBox').classList.add('hidden');
@@ -1552,22 +1715,22 @@
       document.getElementById('currMeterInput').value = b.room.meter + 115;
       updateLiveMeterPreview();
 
-      if (state.bill) {
+      if (shared.bill) {
         document.getElementById('billReceiptBox').classList.remove('hidden');
-        document.getElementById('billUploadedByTag').innerText = state.bill.uploadedBy;
-        document.getElementById('billTotalAmt').innerText = state.bill.total;
-        document.getElementById('billRentPart').innerText = state.bill.rent;
-        document.getElementById('billUnitsPart').innerText = state.bill.units;
-        document.getElementById('billElecPart').innerText = state.bill.elec;
-        document.getElementById('billMeterProofImg').src = state.bill.meterPhoto;
-        document.getElementById('overdueDaysCount').innerText = `${state.bill.overdueDays} Days`;
-        document.getElementById('deductedTotalAmt').innerText = state.bill.deducted;
+        document.getElementById('billUploadedByTag').innerText = shared.bill.uploadedBy;
+        document.getElementById('billTotalAmt').innerText = shared.bill.total;
+        document.getElementById('billRentPart').innerText = shared.bill.rent;
+        document.getElementById('billUnitsPart').innerText = shared.bill.units;
+        document.getElementById('billElecPart').innerText = shared.bill.elec;
+        document.getElementById('billMeterProofImg').src = shared.bill.meterPhoto;
+        document.getElementById('overdueDaysCount').innerText = `${shared.bill.overdueDays} Days`;
+        document.getElementById('deductedTotalAmt').innerText = shared.bill.deducted;
 
         const tag = document.getElementById('billStatusTag');
-        if (state.bill.paid) {
-          tag.innerText = `PAID & SETTLED ON ${state.bill.paidDate}`;
+        if (shared.bill.paid) {
+          tag.innerText = `PAID & SETTLED ON ${shared.bill.paidDate}`;
           tag.className = "inline-block mt-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800";
-        } else if (state.bill.overdueDays > 0) {
+        } else if (shared.bill.overdueDays > 0) {
           tag.innerText = "GRACE OVERDUE — DEDUCTING DEPOSIT";
           tag.className = "inline-block mt-1 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800";
         } else {
@@ -1577,7 +1740,8 @@
       }
 
       document.getElementById('activeAddOnsList').innerHTML = b.addOns.length ? `Active Subscriptions: ${b.addOns.join(' • ')}` : '';
-      document.getElementById('complaintsList').innerHTML = b.complaints.map(c => `
+      const myComplaints = shared.complaints.filter(c => c.tenantName === b.tenantName || !c.tenantName);
+      document.getElementById('complaintsList').innerHTML = myComplaints.map(c => `
         <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs">
           <div class="flex justify-between font-bold text-slate-800">
             <span>${c.id} • ${c.cat}</span>
@@ -1589,92 +1753,155 @@
     }
 
     function renderOwnerPortal() {
-      const hasActiveWebsiteBooking = state.booking && state.booking.status !== 'TOKEN_LOCKED';
-      const websiteBedsCount = hasActiveWebsiteBooking ? state.booking.room.bedsBooked : 0;
-      const monthlyFee = websiteBedsCount * OWNER_FEE_PER_BED;
+      // 1. Registered properties list in Owner Portal
+      const regWrap = document.getElementById('ownerRegisteredListings');
+      if (regWrap) {
+        regWrap.innerHTML = shared.rooms.map(r => `
+          <div class="p-3 rounded-xl border ${r.isOwnerCreated ? 'border-amber-300 bg-amber-50/40' : 'border-slate-200 bg-slate-50'} flex items-start justify-between gap-2 text-xs">
+            <div>
+              <div class="font-bold text-slate-900">${r.title}</div>
+              <div class="text-slate-500 mt-0.5">${r.city || 'Greater Noida'} • Rent: <strong>₹${r.baseRent}/mo</strong> • ${r.availableBeds || 1} Bed(s)</div>
+              ${r.isOwnerCreated ? `<span class="inline-block mt-1 text-[10px] font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded">Owner Registered</span>` : `<span class="inline-block mt-1 text-[10px] font-semibold bg-slate-200 text-slate-700 px-2 py-0.5 rounded">Default Catalog</span>`}
+            </div>
+            ${r.isOwnerCreated ? `<button onclick="deleteOwnerRoom('${r.id}')" class="text-[11px] font-bold text-rose-600 hover:underline">Remove</button>` : ''}
+          </div>
+        `).join('');
+      }
+
+      // 2. Enrolled customers ledger (₹100/bed/month)
+      const enrollments = shared.enrollments || [];
+      const totalBeds = enrollments.reduce((sum, e) => sum + (e.room.bedsBooked || 1), 0);
+      const monthlyFee = totalBeds * OWNER_FEE_PER_BED;
 
       document.getElementById('ownerMonthlyFeeTotal').innerText = `₹${monthlyFee.toLocaleString('en-IN')} / mo`;
-      document.getElementById('ownerBedBreakdown').innerText = `${websiteBedsCount} Website-Booked Bed(s) × ₹${OWNER_FEE_PER_BED}/bed`;
+      document.getElementById('ownerBedBreakdown').innerText = `${totalBeds} Enrolled Bed(s) × ₹${OWNER_FEE_PER_BED}/bed`;
 
       const tableBody = document.getElementById('ownerWebsiteBedsTableBody');
-      if (!hasActiveWebsiteBooking) {
+      if (!enrollments.length) {
         tableBody.innerHTML = `
           <tr>
-            <td colspan="6" class="py-5 text-center text-slate-400">No residents have completed move-in through the website yet.</td>
+            <td colspan="6" class="py-5 text-center text-slate-400">No customer has enrolled in your PG/room yet.</td>
           </tr>
         `;
+      } else {
+        tableBody.innerHTML = enrollments.map(b => {
+          const rentDisplay = shared.bill
+            ? `₹${shared.bill.total} (Rent ₹${shared.bill.rent} + Light ₹${shared.bill.elec})`
+            : `₹${b.room.finalRent} / mo`;
+          const enrollBadge = b.status === 'TOKEN_LOCKED'
+            ? `<span class="bg-amber-100 text-amber-900 font-bold px-2.5 py-0.5 rounded-full">TOKEN ENROLLED (5-Day Hold)</span>`
+            : `<span class="bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">ACTIVE ENROLLED</span>`;
+          const paymentBadge = shared.bill
+            ? (shared.bill.paid
+                ? `<span class="bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">PAID (${shared.bill.paidDate})</span>`
+                : `<span class="bg-amber-100 text-amber-800 font-bold px-2.5 py-0.5 rounded-full">PENDING (Due ${b.nextDueDate})</span>`)
+            : `<span class="bg-indigo-100 text-indigo-800 font-bold px-2.5 py-0.5 rounded-full">TOKEN / ADVANCE PAID</span>`;
+
+          return `
+            <tr class="hover:bg-slate-50">
+              <td class="py-3 px-3 font-bold text-slate-900">
+                ${b.tenantName} ${b.tenantPhone ? `<span class="text-[11px] font-normal text-slate-500">(${b.tenantPhone})</span>` : ''}
+                <span class="block text-[11px] font-normal text-indigo-800">${b.room.title} • ${b.selectedFacilities}</span>
+              </td>
+              <td class="py-3 px-3">${enrollBadge}</td>
+              <td class="py-3 px-3 text-slate-700">Enrolled: ${b.enrolledDate}<br/><span class="text-[11px] font-semibold text-indigo-900">Due: ${b.nextDueDate}</span></td>
+              <td class="py-3 px-3 font-bold text-slate-800">${rentDisplay}</td>
+              <td class="py-3 px-3">${paymentBadge}</td>
+              <td class="py-3 px-3 text-right font-extrabold text-amber-700">₹${(b.room.bedsBooked || 1) * OWNER_FEE_PER_BED} / mo</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // 3. Meter billing form for active enrolled customer
+      const activeEnrolled = enrollments.find(e => e.status !== 'TOKEN_LOCKED') || enrollments[enrollments.length - 1];
+      if (!activeEnrolled || activeEnrolled.status === 'TOKEN_LOCKED') {
         document.getElementById('ownerNoActiveTenantBillNotice').classList.remove('hidden');
         document.getElementById('ownerMeterBillingForm').classList.add('hidden');
       } else {
-        const b = state.booking;
-        const rentDisplay = state.bill
-          ? `₹${state.bill.total} (Rent ₹${state.bill.rent} + Light ₹${state.bill.elec})`
-          : `₹${b.room.finalRent} / mo`;
-        const paymentBadge = state.bill
-          ? (state.bill.paid
-              ? `<span class="bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">PAID (${state.bill.paidDate})</span>`
-              : `<span class="bg-amber-100 text-amber-800 font-bold px-2.5 py-0.5 rounded-full">PENDING (Due ${b.nextDueDate})</span>`)
-          : `<span class="bg-indigo-100 text-indigo-800 font-bold px-2.5 py-0.5 rounded-full">ADVANCE PAID (Next: ${b.nextDueDate})</span>`;
-
-        tableBody.innerHTML = `
-          <tr class="hover:bg-slate-50">
-            <td class="py-3 px-3 font-bold text-slate-900">
-              ${b.tenantName}
-              <span class="block text-[11px] font-normal text-slate-500">${b.room.title} (${b.room.bedsBooked} Bed)</span>
-            </td>
-            <td class="py-3 px-3 text-slate-700">${b.moveInDate}</td>
-            <td class="py-3 px-3 font-semibold text-indigo-900">${b.nextDueDate}</td>
-            <td class="py-3 px-3 font-bold text-slate-800">${rentDisplay}</td>
-            <td class="py-3 px-3">${paymentBadge}</td>
-            <td class="py-3 px-3 text-right font-extrabold text-amber-700">₹${b.room.bedsBooked * OWNER_FEE_PER_BED} / mo</td>
-          </tr>
-        `;
-
         document.getElementById('ownerNoActiveTenantBillNotice').classList.add('hidden');
         document.getElementById('ownerMeterBillingForm').classList.remove('hidden');
-        document.getElementById('ownerBillTenantName').innerText = b.tenantName;
-        document.getElementById('ownerBillRoomName').innerText = b.room.title;
-        document.getElementById('ownerPrevMeterInput').value = b.room.meter;
-        document.getElementById('ownerCurrMeterInput').value = b.room.meter + 120;
-        document.getElementById('ownerMeterPreviewImg').src = selectedMeterPhotoData || (state.bill ? state.bill.meterPhoto : defaultMeterSvg);
+        document.getElementById('ownerBillTenantName').innerText = activeEnrolled.tenantName;
+        document.getElementById('ownerBillRoomName').innerText = activeEnrolled.room.title;
+        document.getElementById('ownerPrevMeterInput').value = activeEnrolled.room.meter;
+        document.getElementById('ownerCurrMeterInput').value = activeEnrolled.room.meter + 120;
+        document.getElementById('ownerMeterPreviewImg').src = selectedMeterPhotoData || (shared.bill ? shared.bill.meterPhoto : defaultMeterSvg);
         updateOwnerMeterPreview();
       }
 
-      const propLabel = state.booking
-        ? state.booking.room.title
-        : (state.user && state.user.propertyName ? state.user.propertyName : "Registered Property");
+      // 4. Instant complaints list in Owner Portal
+      const compCount = shared.complaints.filter(c => !c.status.includes('RESOLVED')).length;
+      document.getElementById('ownerComplaintCountBadge').innerText = `${compCount} Open / ${shared.complaints.length} Total`;
+      if (compCount > 0) document.getElementById('ownerAlertDot').classList.remove('hidden');
+      else document.getElementById('ownerAlertDot').classList.add('hidden');
+
+      const list = document.getElementById('ownerComplaintsList');
+      if (!shared.complaints.length) {
+        list.innerHTML = `<p class="text-xs text-slate-400">No complaints received from customers yet.</p>`;
+      } else {
+        list.innerHTML = shared.complaints.map(c => `
+          <div class="p-3.5 bg-rose-50/50 border border-rose-200 rounded-xl text-xs space-y-1.5">
+            <div class="flex flex-wrap justify-between items-center gap-2 font-bold">
+              <span class="text-slate-900">${c.id} • ${c.cat} <span class="text-indigo-700 font-semibold">— From ${c.tenantName} (${c.roomTitle})</span></span>
+              <span class="${c.status.includes('RESOLVED') ? 'text-emerald-700 bg-emerald-100' : 'text-rose-700 bg-rose-100'} px-2.5 py-0.5 rounded-full text-[11px]">${c.status}</span>
+            </div>
+            <p class="text-slate-700 font-medium">${c.desc}</p>
+            <div class="flex items-center justify-between pt-1">
+              <span class="text-[11px] text-slate-400">Received at ${c.time || 'just now'}</span>
+              ${!c.status.includes('RESOLVED') ? `
+                <button onclick="resolveComplaintByOwner('${c.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1 rounded text-[11px]">
+                  Mark Resolved
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // 5. SOS & Siren
+      const propLabel = activeEnrolled
+        ? activeEnrolled.room.title
+        : (currentUser && currentUser.propertyName ? currentUser.propertyName : "Registered Property");
       document.getElementById('ownerScopedPropLabel').innerText = propLabel;
 
-      if (state.customerSos && state.booking) {
+      if (shared.customerSos) {
         document.getElementById('ownerSosEmpty').classList.add('hidden');
         document.getElementById('ownerSosActiveCard').classList.remove('hidden');
-        document.getElementById('ownerSosTenantInfo').innerText = `Tenant: ${state.booking.tenantName} • Property: ${state.booking.room.title}`;
-        document.getElementById('ownerSosDetails').innerText = `${state.customerSos.issue} ${state.customerSos.note ? '— Note: ' + state.customerSos.note : ''}`;
+        document.getElementById('ownerSosTenantInfo').innerText = `Tenant: ${shared.customerSos.tenantName} • Property: ${shared.customerSos.roomTitle}`;
+        document.getElementById('ownerSosDetails').innerText = `${shared.customerSos.issue} ${shared.customerSos.note ? '— Note: ' + shared.customerSos.note : ''}`;
       } else {
         document.getElementById('ownerSosEmpty').classList.remove('hidden');
         document.getElementById('ownerSosActiveCard').classList.add('hidden');
       }
-
-      const list = document.getElementById('ownerComplaintsList');
-      if (!state.booking || !state.booking.complaints.length) {
-        list.innerHTML = `<p class="text-xs text-slate-400">No open maintenance complaints.</p>`;
-      } else {
-        list.innerHTML = state.booking.complaints.map(c => `
-          <div class="p-3 bg-slate-50 border rounded-xl text-xs space-y-1.5">
-            <div class="flex justify-between font-bold">
-              <span>${c.id} • ${c.cat}</span>
-              <span class="${c.status.includes('RESOLVED') ? 'text-emerald-600' : 'text-amber-600'}">${c.status}</span>
-            </div>
-            <p class="text-slate-600">${c.desc}</p>
-            ${!c.status.includes('RESOLVED') ? `
-              <button onclick="resolveComplaintByOwner('${c.id}')" class="bg-emerald-600 text-white font-semibold px-3 py-1 rounded text-[11px]">
-                Mark Resolved
-              </button>
-            ` : ''}
-          </div>
-        `).join('');
-      }
     }
+
+    // Listen to changes from another tab/window in real time
+    let lastSeenTs = shared.lastEventTimestamp || 0;
+    window.addEventListener('storage', (e) => {
+      if (e.key === STORAGE_KEY && e.newValue) {
+        const nextShared = JSON.parse(e.newValue);
+        const isNewEvent = nextShared.lastEventTimestamp && nextShared.lastEventTimestamp !== lastSeenTs;
+        shared = nextShared;
+        lastSeenTs = shared.lastEventTimestamp || 0;
+        refreshVisibleViews();
+        if (isNewEvent && shared.lastEventSummary && currentUser) {
+          showLiveToast("Live Update Synced", shared.lastEventSummary);
+        }
+      }
+    });
+
+    // Polling fallback for same-origin tabs
+    setInterval(() => {
+      const latest = loadSharedState();
+      if (latest.lastEventTimestamp && latest.lastEventTimestamp !== lastSeenTs) {
+        shared = latest;
+        lastSeenTs = latest.lastEventTimestamp;
+        refreshVisibleViews();
+        if (shared.lastEventSummary && currentUser) {
+          showLiveToast("Live Update Synced", shared.lastEventSummary);
+        }
+      }
+    }, 1000);
   </script>
 </body>
 </html>
