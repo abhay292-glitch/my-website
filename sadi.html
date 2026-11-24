@@ -52,6 +52,10 @@
           <span id="ownerAlertDot" class="hidden absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 animate-ping"></span>
         </div>
 
+        <button onclick="resetDemoStorage()" class="hidden sm:inline-block text-[11px] font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1.5 rounded-lg transition">
+          Reset Data
+        </button>
+
         <button onclick="logoutSession()" class="text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg transition">
           Logout
         </button>
@@ -94,7 +98,7 @@
           </p>
         </div>
         <div class="space-y-2.5 mt-8 text-xs sm:text-sm text-indigo-100">
-          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Owner registers PG/Room → Appears live in Customer Explore</div>
+          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> 9 Verified Stays + Owner-Registered PGs/Rooms</div>
           <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Customer enrolls → Appears live in Owner Enrolled Beds (₹100/bed)</div>
           <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Customer sends complaint → Instant message in Owner Portal</div>
         </div>
@@ -174,10 +178,15 @@
   <!-- ==================== 2. CUSTOMER EXPLORE SECTION ==================== -->
   <section id="exploreSection" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-      <button onclick="logoutSession()" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-indigo-700 bg-white border border-slate-200 px-3.5 py-2 rounded-lg shadow-sm transition">
-        ← Switch Role / Edit Profile
-      </button>
-      <span class="text-xs text-slate-500">Showing <strong id="listingCountText" class="text-slate-800">0</strong> verified stays (Owner-registered stays appear live!)</span>
+      <div class="flex flex-wrap items-center gap-2">
+        <button onclick="logoutSession()" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-indigo-700 bg-white border border-slate-200 px-3.5 py-2 rounded-lg shadow-sm transition">
+          ← Switch Role / Edit Profile
+        </button>
+        <button onclick="manualSyncNow()" class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 hover:bg-indigo-100 bg-indigo-50 border border-indigo-200 px-3.5 py-2 rounded-lg transition">
+          ↻ Sync New PGs (<span id="ownerCreatedCountBadge">0</span> Owner Added)
+        </button>
+      </div>
+      <span class="text-xs text-slate-500">Showing <strong id="listingCountText" class="text-slate-800">9</strong> verified stays (Owner-registered stays appear live!)</span>
     </div>
 
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5">
@@ -205,7 +214,7 @@
       <div class="flex items-center gap-2">
         <span class="text-xs font-semibold text-slate-500">Sort:</span>
         <select id="sortOrderSelect" onchange="renderRooms()" class="text-xs font-semibold border border-slate-300 rounded-lg px-2.5 py-1.5 bg-white">
-          <option value="DEFAULT">Recommended</option>
+          <option value="DEFAULT">Recommended (Owner New First)</option>
           <option value="LOW_HIGH">Price: Low to High</option>
           <option value="HIGH_LOW">Price: High to Low</option>
         </select>
@@ -515,7 +524,7 @@
       <div>
         <span class="bg-amber-100 text-amber-900 text-xs font-bold px-3 py-1 rounded-full">Property Owner Control Center</span>
         <h2 class="text-2xl font-bold text-slate-900 mt-2">Register PG / Room, Track Enrolled Students &amp; Receive Live Complaints</h2>
-        <p class="text-sm text-slate-500">Register a PG or room from your phone — it shows up live to customers. When a customer enrolls or sends a complaint, it appears here immediately.</p>
+        <p class="text-sm text-slate-500">Register a PG or room — it shows up live to customers. When a customer enrolls or sends a complaint, it appears here immediately.</p>
       </div>
     </div>
 
@@ -802,7 +811,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "STAYSETU_SHARED_STATE_V1";
+    const STORAGE_KEY = "STAYSETU_SHARED_STATE_V2";
     const OWNER_FEE_PER_BED = 100;
     const LATE_FEE_PER_DAY = 300;
     const RATE_PER_UNIT = 8;
@@ -831,6 +840,39 @@
         ]
       },
       {
+        id: "PG-102", ownerName: "Sunrise Properties", city: "Greater Noida", category: "PG_HOSTEL",
+        badge: "PG / Hostel • Standard", title: "Sunrise Executive Student PG",
+        baseRent: 5800, facilityFee: 500, token: 500, meter: 1240, bedsBooked: 1, availableBeds: 3, isOwnerCreated: false,
+        img: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=600&q=80",
+        options: [
+          { key: "food", label: "3-Time Meals (Breakfast, Lunch, Dinner)", price: 2000, selected: true },
+          { key: "furnished", label: "Fully Furnished (Study Desk + Geyser)", price: 800, selected: true },
+          { key: "gym", label: "Basic In-House Gym Access", price: 600, selected: false }
+        ]
+      },
+      {
+        id: "PG-103", ownerName: "RoyalNest Estates", city: "Noida", category: "PG_HOSTEL",
+        badge: "PG / Hostel • Luxury", title: "RoyalNest Luxury Hostel & Residences",
+        baseRent: 9500, facilityFee: 1000, token: 1000, meter: 2040, bedsBooked: 1, availableBeds: 2, isOwnerCreated: false,
+        img: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600&q=80",
+        options: [
+          { key: "food", label: "4-Time Multi-Cuisine Meals", price: 2800, selected: true },
+          { key: "gym", label: "24x7 Gym, Sauna & Rooftop Lounge", price: 1200, selected: true },
+          { key: "furnished", label: "Luxury Furnished (Smart TV, AC, Mini Fridge)", price: 1500, selected: true }
+        ]
+      },
+      {
+        id: "PR-201", ownerName: "Shanti Niwas", city: "Greater Noida", category: "PERSONAL_ROOM",
+        badge: "Personal Room • Economy", title: "Shanti Niwas Terrace Room",
+        baseRent: 4200, facilityFee: 300, token: 500, meter: 310, bedsBooked: 1, availableBeds: 1, isOwnerCreated: false,
+        img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80",
+        options: [
+          { key: "furnished", label: "Semi-Furnished (Single Bed + Table)", price: 600, selected: false },
+          { key: "large_chhat", label: "Private Terrace + Air Cooler", price: 500, selected: true },
+          { key: "food", label: "Optional Nearby Tiffin Plan", price: 2200, selected: false }
+        ]
+      },
+      {
         id: "PR-202", ownerName: "GreenView Properties", city: "Greater Noida", category: "PERSONAL_ROOM",
         badge: "Personal Room • Semi-Furnished", title: "GreenView 1RK Private Room",
         baseRent: 6200, facilityFee: 600, token: 500, meter: 510, bedsBooked: 1, availableBeds: 2, isOwnerCreated: false,
@@ -840,6 +882,37 @@
           { key: "large_chhat", label: "Corner Room Upgrade", price: 800, selected: false },
           { key: "gym", label: "Fitness Club Pass", price: 600, selected: false }
         ]
+      },
+      {
+        id: "PR-203", ownerName: "EliteHeights", city: "Noida", category: "PERSONAL_ROOM",
+        badge: "Personal Room • Spacious Suite", title: "EliteHeights Spacious 1BHK Suite",
+        baseRent: 11000, facilityFee: 1000, token: 1000, meter: 940, bedsBooked: 1, availableBeds: 1, isOwnerCreated: false,
+        img: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80",
+        options: [
+          { key: "furnished", label: "Luxury Furnished (Sofa, AC, Washing Machine)", price: 2000, selected: true },
+          { key: "gym", label: "Clubhouse Gym + Pool Access", price: 1000, selected: true },
+          { key: "food", label: "Daily Homestyle Meal Delivery", price: 2800, selected: false }
+        ]
+      },
+      {
+        id: "SR-301", ownerName: "VidyaVihar Stays", city: "Greater Noida", category: "SHARING_ROOM",
+        badge: "3-Sharing • Economy", title: "VidyaVihar 3-Sharing Student Room",
+        baseRent: 3200, facilityFee: 300, token: 500, meter: 620, bedsBooked: 1, availableBeds: 2, isOwnerCreated: false,
+        img: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80",
+        options: [
+          { key: "furnished", label: "Semi-Furnished (3 Beds + Study Desks)", price: 500, selected: true },
+          { key: "large_chhat", label: "Terrace Study & Drying Area", price: 300, selected: false },
+          { key: "food", label: "Shared Tiffin Service", price: 1600, selected: false }
+        ],
+        partner: {
+          name: "Aman & Deepak (20 yrs)", hometown: "Gorakhpur & Prayagraj, UP",
+          occupation: "B.Tech 2nd Year Students", habits: "Budget-Friendly • Exam-Focused • Early Sleepers",
+          terms: [
+            "Electricity sub-meter charges are split equally (1/3rd each) among all three roommates.",
+            "Lights out after 10:30 PM and headphones are mandatory for calls or media.",
+            "Shared room cleaning is rotated every Sunday."
+          ]
+        }
       },
       {
         id: "SR-302", ownerName: "MetroLink Co-Living", city: "Greater Noida", category: "SHARING_ROOM",
@@ -855,9 +928,29 @@
           name: "Rohan Verma (21 yrs)", hometown: "Lucknow, UP",
           occupation: "B.Tech CSE 3rd Year Student", habits: "Non-Smoker • Early Riser • Quiet Study Environment",
           terms: [
-            "Electricity sub-meter charges are split equally among roommates.",
-            "Quiet hours begin at 11:00 PM.",
-            "Smoking and alcohol are strictly prohibited inside the room."
+            "Quiet hours begin at 11:00 PM with no loud music or speaker calls.",
+            "Smoking and alcohol are strictly prohibited inside the room.",
+            "Electricity bill, Wi-Fi (₹400/head), and cleaning charges are split 50/50."
+          ]
+        }
+      },
+      {
+        id: "SR-303", ownerName: "Skyline Residences", city: "Noida", category: "SHARING_ROOM",
+        badge: "2-Sharing • Luxury Condo", title: "Skyline High-Rise 2-Sharing Master Room",
+        baseRent: 8000, facilityFee: 1000, token: 1000, meter: 1420, bedsBooked: 1, availableBeds: 1, isOwnerCreated: false,
+        img: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=600&q=80",
+        options: [
+          { key: "furnished", label: "Luxury Furnished (Split AC, Attached Bath, Balcony)", price: 1500, selected: true },
+          { key: "gym", label: "Clubhouse Gym, Pool & Co-Working Lounge", price: 1000, selected: true },
+          { key: "large_chhat", label: "Sky-Deck Terrace Access", price: 500, selected: false }
+        ],
+        partner: {
+          name: "Karan Malhotra (25 yrs)", hometown: "Chandigarh",
+          occupation: "Product Analyst", habits: "Fitness Enthusiast • Weekend Traveler • Neat & Tidy",
+          terms: [
+            "Keep common living and kitchen areas clean immediately after use.",
+            "Night AC usage runs on a shared schedule with a 50/50 utility split.",
+            "No loud gatherings on weekdays (Monday to Friday)."
           ]
         }
       }
@@ -865,9 +958,9 @@
 
     function getDefaultSharedState() {
       return {
-        rooms: initialRooms,
-        enrollments: [], // Array of enrolled customer records visible to Owner
-        complaints: [],  // Array of complaints visible immediately in Owner Portal
+        rooms: JSON.parse(JSON.stringify(initialRooms)),
+        enrollments: [],
+        complaints: [],
         bill: null,
         customerSos: null,
         propertySiren: null,
@@ -877,7 +970,7 @@
     }
 
     let shared = loadSharedState();
-    let currentUser = null; // Session user in this tab/phone
+    let currentUser = null;
     let currentCategoryFilter = 'ALL';
     let currentBudgetFilter = 'ALL';
     let selectedMeterPhotoData = null;
@@ -893,7 +986,19 @@
           localStorage.setItem(STORAGE_KEY, JSON.stringify(init));
           return init;
         }
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed.rooms) || parsed.rooms.length < initialRooms.length) {
+          const merged = getDefaultSharedState();
+          const customRooms = (parsed.rooms || []).filter(r => r.isOwnerCreated);
+          merged.rooms = [...customRooms, ...merged.rooms];
+          merged.enrollments = parsed.enrollments || [];
+          merged.complaints = parsed.complaints || [];
+          merged.bill = parsed.bill || null;
+          merged.customerSos = parsed.customerSos || null;
+          merged.propertySiren = parsed.propertySiren || null;
+          return merged;
+        }
+        return parsed;
       } catch (_) {
         return getDefaultSharedState();
       }
@@ -904,8 +1009,30 @@
       if (eventSummary) shared.lastEventSummary = eventSummary;
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
-      } catch (_) {}
+      } catch (_) {
+        shared.rooms.forEach(r => {
+          if (r.isOwnerCreated && r.img && r.img.startsWith('data:')) {
+            r.img = "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80";
+          }
+        });
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(shared)); } catch (__) {}
+      }
       refreshVisibleViews();
+    }
+
+    function manualSyncNow() {
+      shared = loadSharedState();
+      lastSeenTs = shared.lastEventTimestamp || 0;
+      refreshVisibleViews();
+      showLiveToast("Synced", `${shared.rooms.length} stays loaded (${shared.rooms.filter(r => r.isOwnerCreated).length} owner-registered).`);
+    }
+
+    function resetDemoStorage() {
+      if (!confirm("Reset all demo listings, enrollments, and complaints back to default?")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      shared = getDefaultSharedState();
+      saveSharedState("Demo state reset to default 9 stays.");
+      showLiveToast("Demo Reset", "Default 9 stays restored.");
     }
 
     function showLiveToast(title, message) {
@@ -999,6 +1126,7 @@
 
     function handleLogin(e) {
       e.preventDefault();
+      shared = loadSharedState();
       const roleFlag = document.getElementById('loginRoleFlag').value;
       const name = document.getElementById('userName').value.trim();
       const email = document.getElementById('userEmail').value.trim();
@@ -1070,6 +1198,7 @@
     }
 
     function switchCustomerView(subView) {
+      shared = loadSharedState();
       document.getElementById('ownerSection').classList.add('hidden');
       if (subView === 'explore') {
         document.getElementById('dashboardSection').classList.add('hidden');
@@ -1084,6 +1213,7 @@
     }
 
     function showOwnerPortal() {
+      shared = loadSharedState();
       document.getElementById('exploreSection').classList.add('hidden');
       document.getElementById('dashboardSection').classList.add('hidden');
       document.getElementById('ownerSection').classList.remove('hidden');
@@ -1103,7 +1233,7 @@
     }
 
     function getCurrentCustomerBooking() {
-      if (!shared.enrollments.length) return null;
+      if (!shared.enrollments || !shared.enrollments.length) return null;
       if (currentUser && currentUser.role === 'CUSTOMER') {
         const exact = shared.enrollments.find(e => e.tenantPhone === currentUser.phone || e.tenantName === currentUser.name);
         if (exact) return exact;
@@ -1111,19 +1241,37 @@
       return shared.enrollments[shared.enrollments.length - 1] || null;
     }
 
-    // OWNER REGISTERS NEW PG / ROOM -> SHOWS IN CUSTOMER EXPLORE
-    function handleNewRoomPhotoSelect(e) {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
+    function compressImageFile(file, callback) {
       const reader = new FileReader();
       reader.onload = (ev) => {
-        newRoomPhotoData = ev.target.result;
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxW = 480;
+          const scale = Math.min(1, maxW / img.width);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          callback(canvas.toDataURL('image/jpeg', 0.65));
+        };
+        img.onerror = () => callback(ev.target.result);
+        img.src = ev.target.result;
       };
       reader.readAsDataURL(file);
     }
 
+    function handleNewRoomPhotoSelect(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      compressImageFile(file, (dataUrl) => {
+        newRoomPhotoData = dataUrl;
+      });
+    }
+
     function registerOwnerRoom(e) {
       e.preventDefault();
+      shared = loadSharedState();
       const title = document.getElementById('newRoomTitle').value.trim();
       const category = document.getElementById('newRoomCategory').value;
       const city = document.getElementById('newRoomCity').value.trim() || 'Greater Noida';
@@ -1177,6 +1325,7 @@
     }
 
     function deleteOwnerRoom(roomId) {
+      shared = loadSharedState();
       shared.rooms = shared.rooms.filter(r => r.id !== roomId);
       saveSharedState(`Removed property ${roomId}.`);
     }
@@ -1210,6 +1359,10 @@
       if (!grid) return;
       const sortOrder = document.getElementById('sortOrderSelect').value;
 
+      const ownerCreatedCount = shared.rooms.filter(r => r.isOwnerCreated).length;
+      const badgeEl = document.getElementById('ownerCreatedCountBadge');
+      if (badgeEl) badgeEl.innerText = ownerCreatedCount;
+
       let filtered = shared.rooms.filter(r => {
         const catMatch = currentCategoryFilter === 'ALL' || r.category === currentCategoryFilter;
         const price = calculateRoomPrice(r);
@@ -1222,6 +1375,7 @@
 
       if (sortOrder === 'LOW_HIGH') filtered.sort((a, b) => calculateRoomPrice(a) - calculateRoomPrice(b));
       else if (sortOrder === 'HIGH_LOW') filtered.sort((a, b) => calculateRoomPrice(b) - calculateRoomPrice(a));
+      else filtered.sort((a, b) => (b.isOwnerCreated ? 1 : 0) - (a.isOwnerCreated ? 1 : 0));
 
       document.getElementById('listingCountText').innerText = filtered.length;
 
@@ -1311,8 +1465,8 @@
       else bookWithToken(roomId);
     }
 
-    // CUSTOMER ENROLLS -> SHOWS IN OWNER PORTAL IMMEDIATELY
     function bookWithToken(roomId) {
+      shared = loadSharedState();
       const existing = getCurrentCustomerBooking();
       if (existing && existing.status !== 'FINAL_CHECKOUT_COMPLETED') {
         alert("You already have an active enrollment. Cancel or vacate it first to enroll elsewhere.");
@@ -1357,6 +1511,7 @@
     }
 
     function discardBooking(skipConfirm = false) {
+      shared = loadSharedState();
       const b = getCurrentCustomerBooking();
       if (!b) return;
       if (!skipConfirm && !confirm("Are you sure you want to cancel/vacate this room enrollment?")) return;
@@ -1368,6 +1523,7 @@
     }
 
     function confirmFinalMoveIn() {
+      shared = loadSharedState();
       const b = getCurrentCustomerBooking();
       if (!b) return;
       const last4 = document.getElementById('kycLast4Input').value.trim();
@@ -1392,17 +1548,15 @@
     function handleMeterFileSelect(e) {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        selectedMeterPhotoData = ev.target.result;
+      compressImageFile(file, (dataUrl) => {
+        selectedMeterPhotoData = dataUrl;
         if (shared.bill) {
           shared.bill.meterPhoto = selectedMeterPhotoData;
           document.getElementById('billMeterProofImg').src = selectedMeterPhotoData;
         }
         const ownerImg = document.getElementById('ownerMeterPreviewImg');
         if (ownerImg) ownerImg.src = selectedMeterPhotoData;
-      };
-      reader.readAsDataURL(file);
+      });
     }
 
     function handleOwnerMeterFileSelect(e) {
@@ -1436,6 +1590,7 @@
     }
 
     function generateMonthlyBill(sourceSide = 'CUSTOMER') {
+      shared = loadSharedState();
       const b = getCurrentCustomerBooking();
       if (!b || b.status === 'TOKEN_LOCKED' || b.status === 'FINAL_CHECKOUT_COMPLETED') return;
       const prev = b.room.meter;
@@ -1473,6 +1628,7 @@
     }
 
     function simulateLateDays(days) {
+      shared = loadSharedState();
       const b = getCurrentCustomerBooking();
       if (!shared.bill || shared.bill.paid || !b || b.status === 'FINAL_CHECKOUT_COMPLETED') return;
       const deductAmt = days * LATE_FEE_PER_DAY;
@@ -1507,6 +1663,7 @@
     }
 
     function settleBillAndDeposit() {
+      shared = loadSharedState();
       const b = getCurrentCustomerBooking();
       if (!shared.bill || !b) return;
       const shortfall = b.initDeposit - b.currDeposit;
@@ -1521,6 +1678,7 @@
     }
 
     function toggleAddOn(serviceName) {
+      shared = loadSharedState();
       const b = getCurrentCustomerBooking();
       if (!b) return;
       if (!b.addOns.includes(serviceName)) {
@@ -1529,8 +1687,8 @@
       }
     }
 
-    // CUSTOMER SENDS COMPLAINT -> INSTANT MESSAGE IN OWNER PORTAL
     function raiseComplaint() {
+      shared = loadSharedState();
       const b = getCurrentCustomerBooking();
       const cat = document.getElementById('complaintCat').value;
       const desc = document.getElementById('complaintDesc').value.trim();
@@ -1556,6 +1714,7 @@
     }
 
     function resolveComplaintByOwner(ticketId) {
+      shared = loadSharedState();
       const t = shared.complaints.find(c => c.id === ticketId);
       if (t) {
         t.status = "RESOLVED BY OWNER";
@@ -1581,6 +1740,7 @@
     function closeCustomerSosModal() { document.getElementById('customerSosModal').classList.add('hidden'); }
 
     function submitCustomerSosToOwner() {
+      shared = loadSharedState();
       const b = getCurrentCustomerBooking();
       const issue = document.getElementById('customerSosPreset').value;
       const note = document.getElementById('customerSosNote').value.trim();
@@ -1598,6 +1758,7 @@
     }
 
     function ownerDispatchHelp(responseText) {
+      shared = loadSharedState();
       if (!shared.customerSos) return;
       shared.customerSos.ownerResponse = responseText;
       saveSharedState(`Owner responded to SOS: ${responseText}`);
@@ -1605,6 +1766,7 @@
     }
 
     function ownerTriggerPropertySiren(customReason) {
+      shared = loadSharedState();
       const b = getCurrentCustomerBooking();
       const propName = b ? b.room.title : (currentUser && currentUser.propertyName ? currentUser.propertyName : "Registered Property");
       const reason = customReason || document.getElementById('ownerSirenReasonSelect').value;
@@ -1620,6 +1782,7 @@
     }
 
     function stopPropertySiren() {
+      shared = loadSharedState();
       shared.propertySiren = null;
       stopSirenAudio();
       saveSharedState("Emergency siren stopped by owner.");
@@ -1747,7 +1910,7 @@
       }
 
       document.getElementById('activeAddOnsList').innerHTML = b.addOns.length ? `Active Subscriptions: ${b.addOns.join(' • ')}` : '';
-      const myComplaints = shared.complaints.filter(c => c.tenantName === b.tenantName || !c.tenantName);
+      const myComplaints = (shared.complaints || []).filter(c => c.tenantName === b.tenantName || !c.tenantName);
       document.getElementById('complaintsList').innerHTML = myComplaints.map(c => `
         <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs">
           <div class="flex justify-between font-bold text-slate-800">
@@ -1760,7 +1923,6 @@
     }
 
     function renderOwnerPortal() {
-      // 1. Registered properties list in Owner Portal
       const regWrap = document.getElementById('ownerRegisteredListings');
       if (regWrap) {
         regWrap.innerHTML = shared.rooms.map(r => `
@@ -1775,7 +1937,6 @@
         `).join('');
       }
 
-      // 2. Enrolled customers ledger (₹100/bed/month)
       const enrollments = shared.enrollments || [];
       const totalBeds = enrollments.reduce((sum, e) => sum + (e.room.bedsBooked || 1), 0);
       const monthlyFee = totalBeds * OWNER_FEE_PER_BED;
@@ -1820,7 +1981,6 @@
         }).join('');
       }
 
-      // 3. Meter billing form for active enrolled customer
       const activeEnrolled = enrollments.find(e => e.status !== 'TOKEN_LOCKED') || enrollments[enrollments.length - 1];
       if (!activeEnrolled || activeEnrolled.status === 'TOKEN_LOCKED') {
         document.getElementById('ownerNoActiveTenantBillNotice').classList.remove('hidden');
@@ -1836,17 +1996,17 @@
         updateOwnerMeterPreview();
       }
 
-      // 4. Instant complaints list in Owner Portal
-      const compCount = shared.complaints.filter(c => !c.status.includes('RESOLVED')).length;
-      document.getElementById('ownerComplaintCountBadge').innerText = `${compCount} Open / ${shared.complaints.length} Total`;
+      const complaints = shared.complaints || [];
+      const compCount = complaints.filter(c => !c.status.includes('RESOLVED')).length;
+      document.getElementById('ownerComplaintCountBadge').innerText = `${compCount} Open / ${complaints.length} Total`;
       if (compCount > 0) document.getElementById('ownerAlertDot').classList.remove('hidden');
       else document.getElementById('ownerAlertDot').classList.add('hidden');
 
       const list = document.getElementById('ownerComplaintsList');
-      if (!shared.complaints.length) {
+      if (!complaints.length) {
         list.innerHTML = `<p class="text-xs text-slate-400">No complaints received from customers yet.</p>`;
       } else {
-        list.innerHTML = shared.complaints.map(c => `
+        list.innerHTML = complaints.map(c => `
           <div class="p-3.5 bg-rose-50/50 border border-rose-200 rounded-xl text-xs space-y-1.5">
             <div class="flex flex-wrap justify-between items-center gap-2 font-bold">
               <span class="text-slate-900">${c.id} • ${c.cat} <span class="text-indigo-700 font-semibold">— From ${c.tenantName} (${c.roomTitle})</span></span>
@@ -1865,7 +2025,6 @@
         `).join('');
       }
 
-      // 5. SOS & Siren
       const propLabel = activeEnrolled
         ? activeEnrolled.room.title
         : (currentUser && currentUser.propertyName ? currentUser.propertyName : "Registered Property");
@@ -1882,7 +2041,6 @@
       }
     }
 
-    // Listen to changes from another tab/window in real time
     let lastSeenTs = shared.lastEventTimestamp || 0;
     window.addEventListener('storage', (e) => {
       if (e.key === STORAGE_KEY && e.newValue) {
@@ -1897,7 +2055,6 @@
       }
     });
 
-    // Polling fallback for same-origin tabs
     setInterval(() => {
       const latest = loadSharedState();
       if (latest.lastEventTimestamp && latest.lastEventTimestamp !== lastSeenTs) {
@@ -1908,7 +2065,7 @@
           showLiveToast("Live Update Synced", shared.lastEventSummary);
         }
       }
-    }, 1000);
+    }, 800);
   </script>
   <script src="validation.js" defer></script>
 </body>
