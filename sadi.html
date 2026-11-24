@@ -17,7 +17,7 @@
 </head>
 <body class="text-slate-800 antialiased">
 
-  <!-- LIVE TOAST ALERT BANNER (INSTANT COMPLAINT / ENROLL / SOS NOTIFICATION) -->
+  <!-- LIVE TOAST ALERT BANNER -->
   <div id="liveToastBanner" class="hidden fixed bottom-5 right-5 z-[60] max-w-sm w-full bg-indigo-950 text-white border-2 border-amber-400 rounded-2xl p-4 shadow-2xl">
     <div class="flex items-start justify-between gap-3">
       <div>
@@ -98,9 +98,9 @@
           </p>
         </div>
         <div class="space-y-2.5 mt-8 text-xs sm:text-sm text-indigo-100">
-          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> 9 Verified Stays + Owner-Registered PGs/Rooms</div>
-          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Customer enrolls → Appears live in Owner Enrolled Beds (₹100/bed)</div>
-          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Customer sends complaint → Instant message in Owner Portal</div>
+          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> 9 Verified Stays + Owner-Registered PGs/Rooms (Persistent)</div>
+          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Visible to every customer repeatedly until removed</div>
+          <div class="flex items-center gap-2.5"><span class="text-amber-400 font-bold">✓</span> Customer enrolls &amp; sends complaints live to Owner Portal</div>
         </div>
       </div>
 
@@ -186,13 +186,13 @@
           ↻ Sync New PGs (<span id="ownerCreatedCountBadge">0</span> Owner Added)
         </button>
       </div>
-      <span class="text-xs text-slate-500">Showing <strong id="listingCountText" class="text-slate-800">9</strong> verified stays (Owner-registered stays appear live!)</span>
+      <span class="text-xs text-slate-500">Showing <strong id="listingCountText" class="text-slate-800">9</strong> stays (<strong id="totalCatalogCountText" class="text-indigo-700">9</strong> in catalog)</span>
     </div>
 
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5">
       <div>
         <h2 class="text-2xl font-bold text-slate-900">Verified Stays in <span id="displayTargetCity" class="text-indigo-600"></span></h2>
-        <p class="text-sm text-slate-500">Choose a PG, Personal Room, or Sharing Room registered by owners and enroll directly.</p>
+        <p class="text-sm text-slate-500">All verified stays plus every PG/Room registered by the owner stay visible to every customer.</p>
       </div>
 
       <div class="flex flex-wrap gap-1.5 bg-slate-200/70 p-1.5 rounded-xl">
@@ -239,7 +239,6 @@
     </div>
 
     <div id="activeDashboardContent" class="hidden space-y-6">
-      <!-- 50% DEPOSIT FINAL CHECKOUT / EVICTION BANNER -->
       <div id="criticalBanner" class="hidden bg-red-600 text-white rounded-2xl p-5 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div id="criticalBannerTitle" class="font-extrabold text-lg">FINAL CHECKOUT NOTICE: Deposit at or Below 50%</div>
@@ -252,7 +251,6 @@
         </button>
       </div>
 
-      <!-- FINAL CHECKOUT COMPLETED SUMMARY CARD -->
       <div id="finalCheckoutCard" class="hidden bg-rose-50 border-2 border-rose-400 rounded-2xl p-6 shadow-md">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <span class="bg-rose-600 text-white text-xs font-extrabold px-3 py-1 rounded-full uppercase">Final Checkout Processed</span>
@@ -262,7 +260,6 @@
         <p id="finalCheckoutSummaryText" class="text-sm text-rose-900 mt-1.5"></p>
       </div>
 
-      <!-- STEP A: 5-DAY TOKEN LOCK PENDING MOVE-IN CARD -->
       <div id="tokenLockCard" class="hidden bg-amber-50 border-2 border-amber-300 rounded-2xl p-6">
         <div class="flex flex-col lg:flex-row justify-between gap-6">
           <div class="flex-1">
@@ -300,10 +297,8 @@
         </div>
       </div>
 
-      <!-- STEP B: ACTIVE TENANT MAIN GRID -->
       <div id="activeTenantGrid" class="hidden grid lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
-          <!-- Room & Deposit Health Card -->
           <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
             <div class="flex flex-wrap justify-between items-start gap-4">
               <div>
@@ -333,7 +328,6 @@
             </div>
           </div>
 
-          <!-- Monthly Rent + Sub-Meter Electricity Bill -->
           <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
               <div>
@@ -433,7 +427,7 @@
                   <option value="Food / Hygiene">Food / Hygiene Issue</option>
                   <option value="Room / AC / Lock">Room / AC / Lock Issue</option>
                 </select>
-                <textarea id="complaintDesc" rows="2" placeholder="Describe your issue (e.g., Room 204 AC not cooling)..." class="w-full px-3 py-2 border rounded-lg text-xs"></textarea>
+                <textarea id="complaintDesc" rows="2" placeholder="Describe your issue..." class="w-full px-3 py-2 border rounded-lg text-xs"></textarea>
                 <button onclick="raiseComplaint()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-xs shadow">
                   Send Complaint Now →
                 </button>
@@ -524,11 +518,11 @@
       <div>
         <span class="bg-amber-100 text-amber-900 text-xs font-bold px-3 py-1 rounded-full">Property Owner Control Center</span>
         <h2 class="text-2xl font-bold text-slate-900 mt-2">Register PG / Room, Track Enrolled Students &amp; Receive Live Complaints</h2>
-        <p class="text-sm text-slate-500">Register a PG or room — it shows up live to customers. When a customer enrolls or sends a complaint, it appears here immediately.</p>
+        <p class="text-sm text-slate-500">Register a PG or room — it stays live for every customer. When a customer enrolls or sends a complaint, it appears here immediately.</p>
       </div>
     </div>
 
-    <!-- 0. REGISTER NEW PG / ROOM FORM (SHOWN LIVE TO CUSTOMERS) -->
+    <!-- 0. REGISTER NEW PG / ROOM FORM -->
     <div class="bg-white rounded-2xl p-6 border-2 border-indigo-300 shadow-sm mb-6">
       <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
         <div>
@@ -576,7 +570,7 @@
           <input type="file" id="newRoomPhotoInput" accept="image/*" onchange="handleNewRoomPhotoSelect(event)" class="w-full text-[11px] border border-slate-300 rounded-lg p-1.5 bg-white" />
         </div>
         <div class="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center justify-between gap-3 pt-1">
-          <span class="text-xs text-slate-500">Registered listings are saved in shared state so customers see them immediately.</span>
+          <span class="text-xs text-slate-500">Registered listings stay saved in shared state so every customer can see and book them.</span>
           <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs shadow transition">
             + Publish PG / Room to Customers
           </button>
@@ -584,7 +578,7 @@
       </form>
 
       <div id="ownerRegisteredListingsWrap" class="mt-5 pt-4 border-t border-slate-200">
-        <div class="text-xs font-bold uppercase text-slate-500 mb-2">Your Registered Properties &amp; Rooms</div>
+        <div class="text-xs font-bold uppercase text-slate-500 mb-2">All Properties &amp; Rooms in Catalog</div>
         <div id="ownerRegisteredListings" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
       </div>
     </div>
@@ -811,7 +805,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "STAYSETU_SHARED_STATE_V2";
+    const STORAGE_KEY = "STAYSETU_SHARED_STATE_V3";
     const OWNER_FEE_PER_BED = 100;
     const LATE_FEE_PER_DAY = 300;
     const RATE_PER_UNIT = 8;
@@ -1007,6 +1001,7 @@
     function saveSharedState(eventSummary = "") {
       shared.lastEventTimestamp = Date.now();
       if (eventSummary) shared.lastEventSummary = eventSummary;
+      lastSeenTs = shared.lastEventTimestamp;
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(shared));
       } catch (_) {
@@ -1086,6 +1081,7 @@
     }
 
     function toggleFacilityOption(roomId, optKey) {
+      shared = loadSharedState();
       const room = shared.rooms.find(r => r.id === roomId);
       if (!room) return;
       const opt = (room.options || []).find(o => o.key === optKey);
@@ -1127,6 +1123,7 @@
     function handleLogin(e) {
       e.preventDefault();
       shared = loadSharedState();
+      lastSeenTs = shared.lastEventTimestamp || 0;
       const roleFlag = document.getElementById('loginRoleFlag').value;
       const name = document.getElementById('userName').value.trim();
       const email = document.getElementById('userEmail').value.trim();
@@ -1173,7 +1170,6 @@
       document.getElementById('customerNavGroup').classList.add('flex');
       document.getElementById('displayTargetCity').innerText = currentUser.currentCity;
 
-      renderRooms();
       const myBooking = getCurrentCustomerBooking();
       if (myBooking) switchCustomerView('dashboard');
       else switchCustomerView('explore');
@@ -1199,6 +1195,7 @@
 
     function switchCustomerView(subView) {
       shared = loadSharedState();
+      lastSeenTs = shared.lastEventTimestamp || 0;
       document.getElementById('ownerSection').classList.add('hidden');
       if (subView === 'explore') {
         document.getElementById('dashboardSection').classList.add('hidden');
@@ -1214,6 +1211,7 @@
 
     function showOwnerPortal() {
       shared = loadSharedState();
+      lastSeenTs = shared.lastEventTimestamp || 0;
       document.getElementById('exploreSection').classList.add('hidden');
       document.getElementById('dashboardSection').classList.add('hidden');
       document.getElementById('ownerSection').classList.remove('hidden');
@@ -1320,8 +1318,8 @@
       document.getElementById('newRoomPhotoInput').value = "";
       newRoomPhotoData = null;
 
-      saveSharedState(`New property "${title}" registered by owner and live for customers.`);
-      showLiveToast("Property Registered", `"${title}" is now visible in Customer Explore.`);
+      saveSharedState(`New property "${title}" registered by owner and visible to all customers.`);
+      showLiveToast("Property Registered", `"${title}" is now live for all customers.`);
     }
 
     function deleteOwnerRoom(roomId) {
@@ -1355,6 +1353,9 @@
     }
 
     function renderRooms() {
+      const freshState = loadSharedState();
+      shared.rooms = freshState.rooms;
+
       const grid = document.getElementById('roomsGrid');
       if (!grid) return;
       const sortOrder = document.getElementById('sortOrderSelect').value;
@@ -1362,6 +1363,8 @@
       const ownerCreatedCount = shared.rooms.filter(r => r.isOwnerCreated).length;
       const badgeEl = document.getElementById('ownerCreatedCountBadge');
       if (badgeEl) badgeEl.innerText = ownerCreatedCount;
+      const totalCatEl = document.getElementById('totalCatalogCountText');
+      if (totalCatEl) totalCatEl.innerText = shared.rooms.length;
 
       let filtered = shared.rooms.filter(r => {
         const catMatch = currentCategoryFilter === 'ALL' || r.category === currentCategoryFilter;
@@ -1388,7 +1391,7 @@
               <img src="${room.img}" alt="${room.title}" class="w-full h-full object-cover" />
               <span class="absolute top-3 left-3 bg-indigo-950/90 text-white text-xs font-semibold px-3 py-1 rounded-full">${room.badge}</span>
               ${room.isOwnerCreated
-                ? `<span class="absolute top-3 right-3 bg-amber-400 text-indigo-950 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">NEW OWNER LISTING</span>`
+                ? `<span class="absolute top-3 right-3 bg-amber-400 text-indigo-950 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">OWNER REGISTERED</span>`
                 : `<span class="absolute bottom-3 right-3 bg-emerald-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded">Deposit Protected</span>`}
             </div>
             <div class="p-5">
@@ -2065,10 +2068,8 @@
           showLiveToast("Live Update Synced", shared.lastEventSummary);
         }
       }
-    }, 800);
+    }, 1000);
   </script>
   <script src="validation.js" defer></script>
 </body>
 </html>
-
-
